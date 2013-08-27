@@ -1,3 +1,6 @@
+
+#pragma warning( disable : 4996 )
+
 #include <iostream>
 #include <math.h>
 #include <stdio.h>
@@ -129,7 +132,7 @@ double PFilter::calcLikelihood(IplImage* img, int x, int y){
     // 赤色らしさをユークリッド距離として求める
     dist = sqrt( b*b + g*g + (255-r)*(255-r));
     // 距離(dist)を平均、sigmaを分散として持つ、正規分布を尤度関数とする
-    result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-dist*dist/(2.0*sigma*sigma)) ;
+    result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-dist*dist/(2.0*sigma*sigma));
   }
   // グレイスケールの場合
   else if( img->nChannels == 1){
