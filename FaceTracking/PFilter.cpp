@@ -116,7 +116,7 @@ void PFilter::weight(IplImage* img)
 }
 
 
-// 尤度の計算
+// 尤度の計算　ここを編集
 double PFilter::calcLikelihood(IplImage* img, int x, int y){
   double result =0.0;
 
