@@ -1,12 +1,11 @@
 
-#pragma warning( disable : 4996 )
+
+#include "PFilter.h"
 
 #include <iostream>
 #include <math.h>
 #include <stdio.h>
 #include <opencv/cv.h>
-
-#include "PFilter.h"
 
 //#define DEBUG
 

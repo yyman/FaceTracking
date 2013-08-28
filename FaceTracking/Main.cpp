@@ -1,8 +1,7 @@
 
-#pragma warning( disable : 4996 )
-
 #include <iostream>
 #include "PFilter.h"
+#include "FaceDetect.h"
 
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
@@ -98,6 +97,10 @@ int main(int argc, char** argv)
   unsigned char key =0;
   bool particleFlag = true;
   bool measureFlag = true;
+
+  //顔検出用クラス
+  FD fd;
+
   for(;;){
     img = cvQueryFrame (capture);
     cvCopy(img, dst);
@@ -129,6 +132,8 @@ int main(int argc, char** argv)
     cvShowImage("img", img);
     cvShowImage("dst", dst);
     
+	//fd.detect(img);
+
     key = cvWaitKey(50);
     if( key == 27 ){
       break;

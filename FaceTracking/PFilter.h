@@ -1,6 +1,9 @@
 #ifndef PFILTER_H_
 #define PFILTER_H_
 
+//'fopen' の宣言を確認してください。回避用
+#pragma warning( disable : 4996 )
+
 #include <vector>
 #include "Particle.h"
 
@@ -38,6 +41,7 @@
 #endif
 
 using namespace std;
+using namespace cv;
 
 typedef struct {
   int x,y, vx,vy;
