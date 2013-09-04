@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 {
   const int w = 640;//画面の幅
   const int h = 480;//画面の高さ
-  const int num = 5000;//パーティクルの数
+  const int num = 300;//パーティクルの数
 
  //状態変数の上限、下限
   LIMIT upper, lower;
