@@ -68,13 +68,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="calcHist.cpp" />
     <ClCompile Include="FaceDetect.cpp" />
+    <ClCompile Include="Histogram.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PFilter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="calcHist.h" />
     <ClInclude Include="FaceDetect.h" />
+    <ClInclude Include="Histogram.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PFilter.h" />
   </ItemGroup>
