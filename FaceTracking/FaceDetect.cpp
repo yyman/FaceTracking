@@ -46,5 +46,6 @@ void FD::detect(Mat src)
 		faceImage = src(*iter);
 		imshow("face", faceImage);
 		calcHSVHist ch(faceImage);
+		ch.baseHist.show();
 	}
 }

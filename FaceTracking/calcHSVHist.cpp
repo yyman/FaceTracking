@@ -20,7 +20,6 @@ calcHSVHist::calcHSVHist(Mat roi)
             baseHist.increment(3,v[2]); // V 
         }
     }
-	baseHist.show();
 }
 
 
