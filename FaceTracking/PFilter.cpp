@@ -40,7 +40,7 @@ PFilter::PFilter(int _num, LIMIT _upper, LIMIT _lower, NOISE _noise)
     pre_particles.push_back(particles[i]);
   }
 
-#ifdef DEBUG
+#ifdef _DEBUG
   for(int i=0; i<num; i++){
     printf("%3d : (%3d, %3d, %3d, %3d), w=%lf \n", 
 	   i, particles[i]->get_x(), particles[i]->get_y(), 

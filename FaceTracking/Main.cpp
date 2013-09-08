@@ -8,8 +8,6 @@
 
 using namespace std;
 
-#define DEBUG
-
 int main(int argc, char** argv)
 {
   const int w = 640;//画面の幅
@@ -53,7 +51,7 @@ int main(int argc, char** argv)
 
   img = cvQueryFrame (capture);
  
-#ifdef DEBUG // 1ステップ目の実行結果を保存する
+#ifdef _DEBUG // 1ステップ目の実行結果を保存する
   cvCopy(img, dst);
   cvSaveImage("img/000.jpg", dst);
 
