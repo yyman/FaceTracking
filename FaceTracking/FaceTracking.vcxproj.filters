@@ -51,4 +51,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="data\haarcascade_frontalface_alt.xml">
+      <Filter>リソース ファイル</Filter>
+    </Xml>
+  </ItemGroup>
 </Project>
