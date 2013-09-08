@@ -40,7 +40,7 @@ int main(int argc, char** argv)
   // 動画像保存用構造体
   CvVideoWriter *vw;
   // ビデオライタ構造体を作成（ 640x480, 10fps, avi(mpeg4) ）
-  vw = cvCreateVideoWriter ("result/cap.avi", CV_FOURCC ('X', 'V', 'I', 'D'), 10, cvSize ((int) w, (int) h));
+ // vw = cvCreateVideoWriter ("result/cap.avi", CV_FOURCC ('X', 'V', 'I', 'D'), 10, cvSize ((int) w, (int) h));
 
   // 観測画像
   IplImage* img = cvCreateImage(cvSize(w,h), 8, 3);
@@ -127,12 +127,12 @@ int main(int argc, char** argv)
     
     
     // ビデオに書き出し
-    cvWriteFrame (vw, dst);
+  //  cvWriteFrame (vw, dst);
 
     cvShowImage("img", img);
     cvShowImage("dst", dst);
     
-	//fd.detect(img);
+	fd.detect(img);
 
     key = cvWaitKey(50);
     if( key == 27 ){

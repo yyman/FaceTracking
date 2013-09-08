@@ -12,6 +12,7 @@ private:
 	int minBin;
 	vector<int> val;
 public:
+	Histogram(void);
 	Histogram(int b, int d);
 	~Histogram(void);
 	int getVal(int dim, int x);
@@ -19,5 +20,7 @@ public:
 	void setMaxBin(int n){maxBin = n;};
 	void setMinBin(int n){minBin = n;};
 	void increment(int dim, int bin);
+	void show();
+	void calcMaxMinBin();
 };
 #endif /*HISTOGRAM_H_*/

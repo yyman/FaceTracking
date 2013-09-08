@@ -2,6 +2,7 @@
 #include <iostream>
 #include "PFilter.h"
 #include "FaceDetect.h"
+#include "calcHSVHist.h"
 
 
 string cascadeName = "data\\haarcascade_frontalface_alt.xml";//äwèKçœÇ›åüèoäÌ
@@ -44,5 +45,6 @@ void FD::detect(Mat src)
     for (vector<Rect>::iterator iter = faces.begin(); iter != faces.end(); iter ++) {
 		faceImage = src(*iter);
 		imshow("face", faceImage);
+		calcHSVHist ch(faceImage);
 	}
 }
