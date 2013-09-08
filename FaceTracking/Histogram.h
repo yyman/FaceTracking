@@ -16,8 +16,8 @@ public:
 	~Histogram(void);
 	int getVal(int dim, int x);
 	void setVal(int b,int v);
-	void setMaxBin(int n){maxBin = n};
-	void setMinBin(int n){minBin = n};
+	void setMaxBin(int n){maxBin = n;};
+	void setMinBin(int n){minBin = n;};
 	void increment(int dim, int bin);
 };
 #endif /*HISTOGRAM_H_*/

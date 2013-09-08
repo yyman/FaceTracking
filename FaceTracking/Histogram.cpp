@@ -33,7 +33,7 @@ void Histogram::setVal(int b, int v)
 	for(int i=0;i<b;i++){
 		it++;
 	}
-	val[it] = v;
+	val[b] = v;
 }
 
 
