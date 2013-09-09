@@ -2,6 +2,8 @@
 #ifndef HISTOGRAM_H_
 #define HISTOGRAM_H_
 
+
+
 class Histogram
 {
 private:
@@ -10,17 +12,20 @@ private:
     int sum;
 	int maxBin;
 	int minBin;
-	vector<int> val;
+	std::vector<double> val;
 public:
 	Histogram(void);
 	Histogram(int b, int d);
 	~Histogram(void);
-	int getVal(int dim, int x);
-	void setVal(int b,int v);
+
+	int getBins(){return bins;};
+	double getVal(int dim, int x);
+
+	void setVal(int dim, int bin, double v);
 	void setMaxBin(int n){maxBin = n;};
 	void setMinBin(int n){minBin = n;};
 	void increment(int dim, int bin);
-	void show();
+	void show(char* widowName);
 	void calcMaxMinBin();
 };
 #endif /*HISTOGRAM_H_*/

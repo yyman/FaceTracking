@@ -1,9 +1,5 @@
 
-#include <iostream>
-#include "PFilter.h"
 #include "FaceDetect.h"
-#include "calcHSVHist.h"
-
 
 string cascadeName = "data\\haarcascade_frontalface_alt.xml";//学習済み検出器
 CascadeClassifier cascade;
@@ -26,10 +22,10 @@ FD::~FD()    //デストラクタの定義
     cout << "FDデストラクタ呼び出し＼n";
 }
 
-void FD::detect(Mat src)
+void FD::detect(Mat src, calcHSVHist ch)
 {
 	//顔検出
-
+	//グレースケール変換
     cvtColor(src, grayImage, CV_RGB2GRAY);
 	// 顔検出を実行
     vector<Rect> faces;
@@ -41,11 +37,14 @@ void FD::detect(Mat src)
         CV_HAAR_SCALE_IMAGE,  // フラグ
 		cv::Size(30, 30) // 最小の矩形
     );
-    // 矩形を描く
+    // 検出矩形に対し処理
     for (vector<Rect>::iterator iter = faces.begin(); iter != faces.end(); iter ++) {
 		faceImage = src(*iter);
 		imshow("face", faceImage);
-		calcHSVHist ch(faceImage);
-		ch.baseHist.show();
+		ch.hsvBaseHist(faceImage);
+		double l = ch.calcLikelihood(ch.hsvHist(faceImage));
+		cout << l << endl;
+		ch.baseHist.show("hist1");
+		ch.hsvHist(faceImage).show("hist2");
 	}
 }

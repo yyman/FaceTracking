@@ -144,6 +144,8 @@ double PFilter::calcLikelihood(IplImage* img, int x, int y){
       result = 0.00001;
     }
   }
+
+  //cout<<result<<endl;
   return result;
 }
 

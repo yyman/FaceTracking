@@ -5,12 +5,14 @@
 #pragma warning( disable : 4996 )
 
 #include <vector>
-#include "Particle.h"
 
 #include <stdio.h>
+#include <math.h>
 #include <opencv\cv.h>
 #include <opencv2\opencv.hpp>
 #include <opencv2\calib3d\calib3d.hpp>
+
+#include "Particle.h"
 
 #ifdef _DEBUG
 //Debugƒ‚[ƒh‚Ìê‡

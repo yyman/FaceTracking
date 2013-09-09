@@ -1,5 +1,6 @@
 #include "Particle.h"
 
+
 Particle::Particle(){
   x = 0;
   y = 0;
@@ -59,3 +60,11 @@ void Particle::set_vx(int _vx){
 void Particle::set_vy(int _vy){
 	vy = _vy;
 }
+
+/*Histogram Particle::getHist(){
+	return pHist;
+}
+
+void Particle::setHist(Histogram _pHist){
+	pHist = _pHist;
+}*/

@@ -2,6 +2,7 @@
 #include <iostream>
 #include "PFilter.h"
 #include "FaceDetect.h"
+#include "calcHSVHist.h"
 
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
@@ -120,7 +121,7 @@ int main(int argc, char** argv)
     }
     // 物体位置（パーティクルの重心）推定結果の表示
     if(measureFlag){
-      cvCircle(dst, cvPoint( p->get_x(), p->get_y() ), 10, CV_RGB(255,120,120), CV_FILLED);
+      cvCircle(dst, cvPoint( p->get_x(), p->get_y() ), 10, CV_RGB(255,20,20), CV_FILLED);
     }
     
     
@@ -130,7 +131,8 @@ int main(int argc, char** argv)
     cvShowImage("img", img);
     cvShowImage("dst", dst);
     
-	fd.detect(img);
+	calcHSVHist ch;
+	fd.detect(img,ch);
 
     key = cvWaitKey(50);
     if( key == 27 ){

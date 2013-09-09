@@ -8,12 +8,17 @@
 class calcHSVHist
 {
 public:
-	vector<Histogram> hist;
+	std::vector<Histogram> hists;
 	Histogram baseHist;
+	Histogram baseNormHist;
+	Mat baseImg;
 	calcHSVHist(void);
-	calcHSVHist(Mat roi);
+	calcHSVHist(Mat baseImg);
 	~calcHSVHist(void);
-	void hsvHist(Mat src);//HSVヒストグラム作成
+	Histogram hsvHist(Mat src);//HSVヒストグラム作成
+	void hsvBaseHist(Mat _baseHist);//ベースHSVヒストグラム作成
+	double  calcHSVHist::calcLikelihood(Histogram srcHist);//バタチャリア距離を計算
+	void calcHSVHist::calcNormHist(Histogram srcHist, Histogram& dstHist);//HSV各ヒストグラムが合計1になるように正規化
 };
 
 #endif /*CALC_HSV_HIST_H_*/

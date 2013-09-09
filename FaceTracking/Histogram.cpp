@@ -32,21 +32,23 @@ Histogram::~Histogram(void)
 }
 
 
-int Histogram::getVal(int dim, int x)
+double Histogram::getVal(int dim, int x)
 {
-	int binVal = val[bins*(dim-1) + x - 1];
-	printf_s("%d",binVal);
+	double binVal = val[bins*(dim-1) + x];
+	//printf_s("%d",binVal);
 	return binVal;
 }
 
 
-void Histogram::setVal(int b, int v)
+void Histogram::setVal(int dim, int bin, double v)
 {
-	vector<int>::iterator it = val.begin();  // イテレータのインスタンス化
-	for(int i=0;i<b;i++){
-		it++;
+	vector<double>::iterator it = val.begin();  // イテレータのインスタンス化
+	//++it;
+	for(int i=0; i < bins*(dim-1) + bin; i++){
+		++it;
 	}
-	val[b] = v;
+	it = val.erase(it);
+	val.insert(it, v);
 }
 
 
@@ -57,7 +59,7 @@ void Histogram::increment(int dim, int bin)
 }
 
 
-void Histogram::show()
+void Histogram::show(char* widowName)
 {
 	//cout<<maxBin<<endl;
 	Mat dst(cv::Size( bins*dimension, 256), CV_8UC3, cv::Scalar::all(255));
@@ -66,7 +68,7 @@ void Histogram::show()
     Scalar colorV = cv::Scalar::all(0);//binの色
 	int normVal;
 	int norm = 256/((val[maxBin]>0)?val[maxBin]:256);
-	for ( int x=0; x<dst.cols; ++x ) {
+	for ( int x=0; x < dst.cols; ++x ) {
 		Scalar color;
 		if(x < bins) color = colorH;
 		else if(x >= bins && x < bins*2) color = colorS;
@@ -77,7 +79,7 @@ void Histogram::show()
 			cv::Point(x+1, dst.rows-normVal),
 			color, -1);
 	}
-	imshow("hist",dst);
+	imshow(widowName,dst);
 }
 
 
@@ -85,7 +87,7 @@ void Histogram::calcMaxMinBin()
 {
 	maxBin = 0;
 	minBin = 0;
-	for(int i=0; i<bins*dimension;i++){
+	for(int i=0; i < bins * dimension; i++){
 		if(val[maxBin] < val[i]) maxBin = i;
 		if(val[maxBin] > val[i]) minBin = i;
 	}
