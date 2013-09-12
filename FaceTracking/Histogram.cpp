@@ -67,7 +67,7 @@ void Histogram::show(char* widowName)
     Scalar colorS = cv::Scalar::all(50);//bin‚ÌF
     Scalar colorV = cv::Scalar::all(0);//bin‚ÌF
 	int normVal;
-	int norm = 256/((val[maxBin]>0)?val[maxBin]:256);
+	double norm = 256/((val[maxBin]>0)?val[maxBin]:256);
 	for ( int x=0; x < dst.cols; ++x ) {
 		Scalar color;
 		if(x < bins) color = colorH;
