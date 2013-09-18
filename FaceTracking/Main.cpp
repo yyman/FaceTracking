@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
   img = cvQueryFrame (capture);
  
-#ifdef _DEBUG // 1ステップ目の実行結果を保存する
+/*#ifdef _DEBUG // 1ステップ目の実行結果を保存する
   cvCopy(img, dst);
   cvSaveImage("img/000.jpg", dst);
 
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 	     2, CV_RGB(0, 0, 255), CV_FILLED);
   }
   cvSaveImage("img/004-resample.jpg", dst);
-#endif
+#endif*/
 
   unsigned char key =0;
   bool particleFlag = true;
