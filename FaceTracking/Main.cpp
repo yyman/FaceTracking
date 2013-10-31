@@ -55,13 +55,11 @@ int main(int argc, char** argv)
 /*#ifdef _DEBUG // 1ステップ目の実行結果を保存する
   cvCopy(img, dst);
   cvSaveImage("img/000.jpg", dst);
-
   for(int i=0; i<num; i++){
     cvCircle(dst, cvPoint( pf->particles[i]->get_x(), pf->particles[i]->get_y() ),
 	     2, CV_RGB(0,0,255), CV_FILLED);
   }
   cvSaveImage("img/000-particle.jpg", dst);
-
   pf->predict();
   cvCopy(img, dst);
   for(int i=0; i<num; i++){
@@ -69,7 +67,6 @@ int main(int argc, char** argv)
 	     2, CV_RGB(0,255,0), CV_FILLED);
   }
   cvSaveImage("img/001-predict.jpg", dst);
-
   pf->weight(img);
   cvCopy(img, dst);
   for(int i=0; i<num; i++){
@@ -77,13 +74,11 @@ int main(int argc, char** argv)
 	     1*pf->pre_particles[i]->getWeight()*1000, CV_RGB(0, 255, 255) );
   }
   cvSaveImage("img/002-weight.jpg", dst);
-
   pf->measure(p);
   cvCopy(img, dst);
   cvCircle(dst, cvPoint( p->get_x(), p->get_y() ),
 	   10, CV_RGB(255, 120, 120), CV_FILLED);
   cvSaveImage("img/003-measure.jpg", dst);
-
   pf->resample();
   cvCopy(img, dst);
   for(int i=0; i<num; i++){
