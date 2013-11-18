@@ -94,7 +94,7 @@ double  calcHSVHist::calcLikelihood(Histogram srcHist)//バタチャリア距離で尤度を
 	//求めた類似度を二乗した和のルートを求める
 	like_hsv = std::sqrt(std::pow(like_h,like_h)+std::pow(like_s,like_s)+std::pow(like_v,like_v));
 	
-		cout << like_h << like_s << like_v << endl;
+		//cout << like_h << like_s << like_v << endl;
 	return like_hsv;
 }
 

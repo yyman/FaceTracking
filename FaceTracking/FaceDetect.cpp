@@ -3,7 +3,6 @@
 
 string cascadeName = "data\\haarcascade_frontalface_alt.xml";//学習済み検出器
 CascadeClassifier cascade;
-Mat faceImage;
 
 FD::FD()    //コンストラクタの定義
 {
@@ -22,8 +21,11 @@ FD::~FD()    //デストラクタの定義
     cout << "FDデストラクタ呼び出し＼n";
 }
 
-void FD::detect(Mat src, calcHSVHist ch)
+bool FD::detect(Mat src, calcHSVHist ch)
 {
+	//検出結果
+	bool faceDetected = false;
+
 	//顔検出
 	//グレースケール変換
     cvtColor(src, grayImage, CV_RGB2GRAY);
@@ -41,10 +43,18 @@ void FD::detect(Mat src, calcHSVHist ch)
     for (vector<Rect>::iterator iter = faces.begin(); iter != faces.end(); iter ++) {
 		faceImage = src(*iter);
 		imshow("face", faceImage);
-		ch.hsvBaseHist(faceImage);
-		double l = ch.calcLikelihood(ch.hsvHist(faceImage));
-		cout << l << endl;
-		ch.baseHist.show("hist1");
-		ch.hsvHist(faceImage).show("hist2");
+		//ch.hsvBaseHist(faceImage);
+		//double l = ch.calcLikelihood(ch.hsvHist(faceImage));
+		//cout << l << endl;
+		//ch.baseHist.show("hist1");
+		//ch.hsvHist(faceImage).show("hist2");
+		faceDetected = true;
+		break;
 	}
+
+	return faceDetected;
+}
+
+Mat FD::getFaceImage(){
+	return faceImage;
 }
