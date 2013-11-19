@@ -55,11 +55,13 @@ public:
 	Histogram baseHist;
 	Histogram baseNormHist;
 	Mat baseImg;
+	bool isBase;
 	calcHSVHist(void);
 	calcHSVHist(Mat baseImg);
 	~calcHSVHist(void);
 	Histogram hsvHist(Mat src);//HSVヒストグラム作成
 	void hsvBaseHist(Mat _baseHist);//ベースHSVヒストグラム作成
+	bool isBaseHist();//ベースHSVヒストグラム作成
 	double  calcHSVHist::calcLikelihood(Histogram srcHist);//バタチャリア距離を計算
 	void calcHSVHist::calcNormHist(Histogram srcHist, Histogram& dstHist);//HSV各ヒストグラムが合計1になるように正規化
 };

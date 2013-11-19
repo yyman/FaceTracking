@@ -95,8 +95,11 @@ void PFilter::predict(){
 }
 
 //予測後の各パーティクルについて重み付けを行う
-void PFilter::weight(IplImage* img, Size _faceSize)
+void PFilter::weight(IplImage* img, Size _faceSize, Mat baseImg)
 {
+	if(!ch.isBaseHist()){
+		ch.hsvBaseHist(baseImg);
+	}
 	for(int i=0; i<num; i++){
 		int x = pre_particles[i]->get_x();
 		int y = pre_particles[i]->get_y();
@@ -148,17 +151,16 @@ double PFilter::calcLikelihood(IplImage* img, int x, int y, Size _faceSize){
 		}
 	}
 	if(_faceSize.width != 0 && _faceSize.height != 0){
-		double dist = 0.0, sigma = 2.0;  
+		double sigma = 1.2;//1.2?  
 		int hx = (x-_faceSize.width/2 > 0)?x-_faceSize.width/2:0;
 		int hy = (y-_faceSize.height/2 > 0)?y-_faceSize.height/2:0;
 		int hw = (x+_faceSize.width/2 < img->width)?_faceSize.width:_faceSize.width-(x+_faceSize.width/2-img->width)-1;
 		int hh = (y+_faceSize.height/2 < img->height)?_faceSize.height:_faceSize.height-(y+_faceSize.height/2-img->height)-1;
 		//cout << hx << "," << hy << "," << hw << "," << hh << endl;
 		faceImg = src(Rect(hx,hy,hw,hh));
-		ch.hsvBaseHist(faceImg);
 		double l = ch.calcLikelihood(ch.hsvHist(faceImg));
 		result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-l*l/(2.0*sigma*sigma));
-	cout<<result<<endl;
+	cout<<l<<","<<result<<endl;
 	}
 	return result;
 }

@@ -3,6 +3,7 @@
 
 calcHSVHist::calcHSVHist(void)
 {
+	isBase = false;
 }
 
 calcHSVHist::calcHSVHist(Mat _baseImg)
@@ -22,6 +23,8 @@ calcHSVHist::calcHSVHist(Mat _baseImg)
         }
     }
 	calcNormHist(baseHist, baseNormHist);
+
+	isBase = true;
 }
 
 
@@ -118,4 +121,8 @@ void calcHSVHist::calcNormHist(Histogram srcHist, Histogram& dstHist)//HSVŠeƒqƒX
        dstHist.setVal(2,i,srcHist.getVal(2,i) / sum_s);
        dstHist.setVal(3,i,srcHist.getVal(3,i) / sum_v);
     }
+}
+
+bool calcHSVHist::isBaseHist(){
+	return isBase;
 }

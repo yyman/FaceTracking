@@ -113,25 +113,26 @@ int main(int argc, char** argv)
 			faceDetected = fd.detect(img,ch);
 			faceSize = fd.getFaceImage().size();
 		}
+		if(faceDetected){
+			pf->predict();  
 
-		pf->predict();  
+			pf->weight(img, faceSize, fd.getFaceImage());
 
-		pf->weight(img, faceSize);
+			pf->measure(p);
 
-		pf->measure(p);
+			pf->resample();
 
-		pf->resample();
-
-		// パーティクルの表示
-		if(particleFlag){
-			for(int i=0; i<num; i++){
-				cvCircle(dst, cvPoint( pf->particles[i]->get_x(), pf->particles[i]->get_y() ), 
-					2, CV_RGB(0, 0, 255), CV_FILLED);
+			// パーティクルの表示
+			if(particleFlag){
+				for(int i=0; i<num; i++){
+					cvCircle(dst, cvPoint( pf->particles[i]->get_x(), pf->particles[i]->get_y() ), 
+						2, CV_RGB(0, 0, 255), CV_FILLED);
+				}
 			}
-		}
-		// 物体位置（パーティクルの重心）推定結果の表示
-		if(measureFlag){
-			cvCircle(dst, cvPoint( p->get_x(), p->get_y() ), 10, CV_RGB(255,20,20), CV_FILLED);
+			// 物体位置（パーティクルの重心）推定結果の表示
+			if(measureFlag){
+				cvCircle(dst, cvPoint( p->get_x(), p->get_y() ), 10, CV_RGB(255,20,20), CV_FILLED);
+			}
 		}
 
 

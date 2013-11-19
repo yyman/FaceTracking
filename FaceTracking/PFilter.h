@@ -53,7 +53,7 @@ public:
 	void resample();
 
 	//重み付け
-	void weight(IplImage* img, Size _faceSize);
+	void weight(IplImage* img, Size _faceSize, Mat baseImg);
 
 	//パーティクル群の重みつき平均を出力
 	void  measure(Particle* r);
