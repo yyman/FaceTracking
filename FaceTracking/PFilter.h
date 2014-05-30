@@ -16,7 +16,7 @@ typedef struct {
 
 class PFilter{
 private:
-	double calcLikelihood(IplImage* img, int x, int y, Size _faceSize);
+	double calcLikelihood(Mat img, int x, int y, Size _blockSize);
 
 	// 各変数の上限、下限
 	LIMIT upper, lower;
@@ -28,7 +28,7 @@ private:
 	int num;
 
 	//顔画像のサイズ（ベースヒストグラムとの比較用）
-	Size faceSize;
+	Size blockSize;
 
 	//ヒストグラム計算用クラス
 	calcHSVHist ch;
@@ -53,7 +53,7 @@ public:
 	void resample();
 
 	//重み付け
-	void weight(IplImage* img, Size _faceSize, Mat baseImg);
+	void weight(Mat img, Size _blockSize, Mat baseImg);
 
 	//パーティクル群の重みつき平均を出力
 	void  measure(Particle* r);

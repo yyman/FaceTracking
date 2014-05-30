@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 
 
 	// OpenCV1を使ってUSBカメラからキャプチャする
-	CvCapture *capture = 0;
+	/*CvCapture *capture = 0;
 	capture = cvCreateCameraCapture(0);
     if( capture == NULL )
     {
@@ -38,18 +38,17 @@ int main(int argc, char** argv)
         return 0;
     }
 	cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, w);
-	cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, h);
+	cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, h);*/
 
 	//OpenCV2を使ってUSBカメラからキャプチャする
 	VideoCapture cap(0);
 	if(!cap.isOpened()){
 		cout<<"not found camera"<<endl;
-		return;
+		return 0;
 	}
 	cap.set(CV_CAP_PROP_FRAME_WIDTH, w);
 	cap.set(CV_CAP_PROP_FRAME_HEIGHT, h);
-	//Mat frame;
-    //cap >> frame; // カメラから新しいフレームを取得
+    //cap >> img; // カメラから新しいフレームを取得
 
 	// 動画像保存用構造体
 	//CvVideoWriter *vw;
@@ -66,15 +65,17 @@ int main(int argc, char** argv)
 	//writer.release();//すべてが終了したら解放
 
 	// 観測画像
-	IplImage* img = cvCreateImage(cvSize(w,h), 8, 3);
+	//IplImage* img = cvCreateImage(cvSize(w,h), 8, 3);
+	Mat img;
 	// 結果画像
-	IplImage* dst = cvCreateImage(cvSize(w,h), 8, 3);
+	//IplImage* dst = cvCreateImage(cvSize(w,h), 8, 3);
+	Mat dst;
 
 	// ウィンドウの生成
-	cvNamedWindow("img");
-	cvNamedWindow("dst");
+	//cvNamedWindow("img");
+	//cvNamedWindow("dst");
 
-	img = cvQueryFrame (capture);
+	//img = cvQueryFrame (capture);
 
 	/*#ifdef _DEBUG // 1ステップ目の実行結果を保存する
 	cvCopy(img, dst);
@@ -120,23 +121,24 @@ int main(int argc, char** argv)
 	FD fd;
 	//顔検出の成否
 	bool faceDetected = false;
-	Size faceSize;
+	Size faceSize = Size(100,100);
 	//ヒストグラム計算用クラス
 	calcHSVHist ch;
 
 	for(;;){
-		img = cvQueryFrame (capture);
-		cvCopy(img, dst);
+		//img = cvQueryFrame (capture);
+		cap >> img; // カメラから新しいフレームを取得
+		dst = img;
 
 		//顔検出
-		if(!faceDetected){
-			faceDetected = fd.detect(img,ch);
-			faceSize = fd.getFaceImage().size();
-		}
-		if(faceDetected){
+		//if(!faceDetected){
+		//	faceDetected = fd.detect(img,ch);
+			//faceSize = fd.getFaceImage().size();
+		//}
+		//if(faceDetected){
 			pf->predict();  
 
-			pf->weight(img, faceSize, fd.getFaceImage());
+			pf->weight(img, faceSize, img);
 
 			pf->measure(p);
 
@@ -145,22 +147,22 @@ int main(int argc, char** argv)
 			// パーティクルの表示
 			if(particleFlag){
 				for(int i=0; i<num; i++){
-					cvCircle(dst, cvPoint( pf->particles[i]->get_x(), pf->particles[i]->get_y() ), 
+					circle(dst, cvPoint( pf->particles[i]->get_x(), pf->particles[i]->get_y() ), 
 						2, CV_RGB(0, 0, 255), CV_FILLED);
 				}
 			}
 			// 物体位置（パーティクルの重心）推定結果の表示
 			if(measureFlag){
-				cvCircle(dst, cvPoint( p->get_x(), p->get_y() ), 10, CV_RGB(255,20,20), CV_FILLED);
+				circle(dst, cvPoint( p->get_x(), p->get_y() ), 10, CV_RGB(255,20,20), CV_FILLED);
 			}
-		}
+		//}
 
 
 		// ビデオに書き出し
 		//  cvWriteFrame (vw, dst);
 
-		cvShowImage("img", img);
-		cvShowImage("dst", dst);
+		imshow("img", img);
+		imshow("dst", dst);
 
 		key = cvWaitKey(33);
 		if( key == 27 ){

@@ -95,7 +95,7 @@ void PFilter::predict(){
 }
 
 //予測後の各パーティクルについて重み付けを行う
-void PFilter::weight(IplImage* img, Size _faceSize, Mat baseImg)
+void PFilter::weight(Mat img, Size _blockSize, Mat baseImg)
 {
 	if(!ch.isBaseHist()){
 		ch.hsvBaseHist(baseImg);
@@ -103,7 +103,7 @@ void PFilter::weight(IplImage* img, Size _faceSize, Mat baseImg)
 	for(int i=0; i<num; i++){
 		int x = pre_particles[i]->get_x();
 		int y = pre_particles[i]->get_y();
-		pre_particles[i]->setWeight( calcLikelihood(img, x, y, _faceSize) );
+		pre_particles[i]->setWeight( calcLikelihood(img, x, y, _blockSize) );
 	}
 
 	//正規化
@@ -119,18 +119,18 @@ void PFilter::weight(IplImage* img, Size _faceSize, Mat baseImg)
 
 
 // 尤度の計算　ここを編集
-double PFilter::calcLikelihood(IplImage* img, int x, int y, Size _faceSize){
+double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize){
 	double result =0.0;
 	Mat src,faceImg;
 	src = img;
 
 	// img が3ch(RGB)の場合
-	/*if(img->nChannels==3){
+	if(img.channels() == 3){
 		// RGB 色空間の場合
 		unsigned char b, g, r;
-		b = img->imageData[img->widthStep*y + x*3];     // B
-		g = img->imageData[img->widthStep*y + x*3 + 1]; // G
-		r = img->imageData[img->widthStep*y + x*3 + 2]; // R
+		b = img.data[img.step*y + x*3];     // B
+		g = img.data[img.step*y + x*3 + 1]; // G
+		r = img.data[img.step*y + x*3 + 2]; // R
 
 		double dist = 0.0, sigma = 50.0;  
 		// 赤色らしさをユークリッド距離として求める
@@ -140,29 +140,30 @@ double PFilter::calcLikelihood(IplImage* img, int x, int y, Size _faceSize){
 		result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-dist*dist/(2.0*sigma*sigma));
 	}
 	// グレイスケールの場合
-	else if( img->nChannels == 1){
+	else if( img.channels() == 1){
 		unsigned char gray;
-		gray = img->imageData[img->widthStep*y + x];
+		gray = img.data[img.step*y + x];
 		if(gray > 0){
 			result = 1.0;
 		}
 		else {
 			result = 0.00001;
 		}
-	}*/
-	if(_faceSize.width != 0 && _faceSize.height != 0){
+	}
+    cout<<result<<endl;
+	/*if(_blockSize.width != 0 && _blockSize.height != 0){
 		double sigma = 1.2;//1.2?  
-		int hx = (x-_faceSize.width/2 > 0)?x-_faceSize.width/2:0;
-		int hy = (y-_faceSize.height/2 > 0)?y-_faceSize.height/2:0;
-		int hw = (x+_faceSize.width/2 < img->width)?_faceSize.width:_faceSize.width-(x+_faceSize.width/2-img->width)-1;
-		int hh = (y+_faceSize.height/2 < img->height)?_faceSize.height:_faceSize.height-(y+_faceSize.height/2-img->height)-1;
+		int hx = (x-_blockSize.width/2 > 0)?x-_blockSize.width/2:0;
+		int hy = (y-_blockSize.height/2 > 0)?y-_blockSize.height/2:0;
+		int hw = (x+_blockSize.width/2 < img.size().width)?_blockSize.width:_blockSize.width-(x+_blockSize.width/2-img.size().width)-1;
+		int hh = (y+_blockSize.height/2 < img.size().height)?_blockSize.height:_blockSize.height-(y+_blockSize.height/2-img.size().height)-1;
 		//cout << hx << "," << hy << "," << hw << "," << hh << endl;
 		faceImg = src(Rect(hx,hy,hw,hh));
 		double l = ch.calcLikelihood(ch.hsvHist(faceImg));
 		result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-l*l/(2.0*sigma*sigma));
 		//system("cls");
 		//cout<<l<<","<<result<<endl;
-	}
+	}*/
 	return result;
 }
 
