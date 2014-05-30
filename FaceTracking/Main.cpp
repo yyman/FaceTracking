@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 {
 	const int w = 640;//画面の幅
 	const int h = 480;//画面の高さ
-	const int num = 300;//パーティクルの数
+	const int num = 30;//パーティクルの数
 
 	//状態変数の上限、下限
 	LIMIT upper, lower;
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 	Particle *p = new Particle();
 
 
-	// OpenCVを使ってUSBカメラからキャプチャする
+	// OpenCV1を使ってUSBカメラからキャプチャする
 	CvCapture *capture = 0;
 	capture = cvCreateCameraCapture(0);
     if( capture == NULL )
@@ -40,10 +40,30 @@ int main(int argc, char** argv)
 	cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, w);
 	cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, h);
 
+	//OpenCV2を使ってUSBカメラからキャプチャする
+	VideoCapture cap(0);
+	if(!cap.isOpened()){
+		cout<<"not found camera"<<endl;
+		return;
+	}
+	cap.set(CV_CAP_PROP_FRAME_WIDTH, w);
+	cap.set(CV_CAP_PROP_FRAME_HEIGHT, h);
+	//Mat frame;
+    //cap >> frame; // カメラから新しいフレームを取得
+
 	// 動画像保存用構造体
-	CvVideoWriter *vw;
+	//CvVideoWriter *vw;
 	// ビデオライタ構造体を作成（ 640x480, 10fps, avi(mpeg4) ）
 	// vw = cvCreateVideoWriter ("result/cap.avi", CV_FOURCC ('X', 'V', 'I', 'D'), 10, cvSize ((int) w, (int) h));
+	
+	//OpenCV2　動画保存
+	string outputPath = "result/cap.avi";
+	double outputFPS = 30;
+	Size outputSize = Size(w, h);
+	VideoWriter writer(outputPath, CV_FOURCC_DEFAULT, outputFPS, outputSize);
+	//Mat frame;
+    //writer << frame; // フレームを保存
+	//writer.release();//すべてが終了したら解放
 
 	// 観測画像
 	IplImage* img = cvCreateImage(cvSize(w,h), 8, 3);

@@ -125,7 +125,7 @@ double PFilter::calcLikelihood(IplImage* img, int x, int y, Size _faceSize){
 	src = img;
 
 	// img ‚ª3ch(RGB)‚Ìê‡
-	if(img->nChannels==3){
+	/*if(img->nChannels==3){
 		// RGB F‹óŠÔ‚Ìê‡
 		unsigned char b, g, r;
 		b = img->imageData[img->widthStep*y + x*3];     // B
@@ -149,7 +149,7 @@ double PFilter::calcLikelihood(IplImage* img, int x, int y, Size _faceSize){
 		else {
 			result = 0.00001;
 		}
-	}
+	}*/
 	if(_faceSize.width != 0 && _faceSize.height != 0){
 		double sigma = 1.2;//1.2?  
 		int hx = (x-_faceSize.width/2 > 0)?x-_faceSize.width/2:0;
@@ -160,7 +160,8 @@ double PFilter::calcLikelihood(IplImage* img, int x, int y, Size _faceSize){
 		faceImg = src(Rect(hx,hy,hw,hh));
 		double l = ch.calcLikelihood(ch.hsvHist(faceImg));
 		result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-l*l/(2.0*sigma*sigma));
-	cout<<l<<","<<result<<endl;
+		//system("cls");
+		//cout<<l<<","<<result<<endl;
 	}
 	return result;
 }
