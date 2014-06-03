@@ -7,13 +7,13 @@
 class CalcLike
 {
 public:
-	std::vector<Histogram> hists;
-	Histogram baseHist;
-	Histogram baseNormHist;
-	Mat baseImg;
+	Mat src,dst;
+	Size blockSize;
+	Size cellSize;
+	std::vector<double> cell;
 	bool isBase;
 	CalcLike(void);
-	CalcLike(Mat baseImg);
+	CalcLike(Mat _src, Size _blockSize);
 	~CalcLike(void);
 	Histogram hsvHist(Mat src);//HSVヒストグラム作成
 	void hsvBaseHist(Mat _baseHist);//ベースHSVヒストグラム作成
