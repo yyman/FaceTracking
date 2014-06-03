@@ -77,6 +77,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="calcHSVHist.h" />
+    <ClInclude Include="CalcLike.h" />
+    <ClInclude Include="Define.h" />
     <ClInclude Include="FaceDetect.h" />
     <ClInclude Include="Histogram.h" />
     <ClInclude Include="Particle.h" />

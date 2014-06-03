@@ -8,20 +8,44 @@
 
 using namespace std;
 
+int w = 640;//画面の幅
+int h = 480;//画面の高さ
+int num = 150;//パーティクルの数
+Size blockSize = Size(50,50);//粒子のブロックサイズ（決め打ち）
+Point mousePoint;
+bool blockImgDone = true;
+
+void onMouse (int event, int x, int y, int flags, void *param = NULL)
+{  char str[64];
+	static int line = 0;
+	// マウスイベントを取得 
+	switch (event) 
+	{
+				case CV_EVENT_LBUTTONDOWN:
+					sprintf (str, "(%d,%d) %s", x, y, "LBUTTON_DOWN");
+					break;
+
+				case CV_EVENT_LBUTTONUP:
+					sprintf (str, "(%d,%d) %s", x, y, "LBUTTON_UP");
+					mousePoint.x=(x>blockSize.width)?((x<w-blockSize.width)?x:w-blockSize.width):blockSize.width;
+					mousePoint.y=(y>blockSize.height)?((y<h-blockSize.height)?y:h-blockSize.height):blockSize.height;
+					break;
+	} 
+	
+}
+
 int main(int argc, char** argv)
 {
-	const int w = 640;//画面の幅
-	const int h = 480;//画面の高さ
-	const int num = 30;//パーティクルの数
+	Mat blockImg;//追跡用のブロック画像
 
 	//状態変数の上限、下限
 	LIMIT upper, lower;
-	upper.x=w; upper.y= h; upper.vx=w/2; upper.vy=h/2;
-	lower.x=0; lower.y=0; lower.vx=-w/2; lower.vy=-h/2;
+	upper.x=w-blockSize.width/2; upper.y= h-blockSize.height/2; upper.vx=w/2; upper.vy=h/2;
+	lower.x=0+blockSize.width/2; lower.y=0+blockSize.height/2; lower.vx=-w/2; lower.vy=-h/2;
 
 	// ノイズの最大値
 	NOISE noise;
-	noise.x=50; noise.y=50; noise.vx=100; noise.vy=100;
+	noise.x=20; noise.y=20; noise.vx=40; noise.vy=40;
 
 	// パーティクルフィルタ
 	PFilter* pf = new PFilter(num, upper, lower, noise);
@@ -112,10 +136,29 @@ int main(int argc, char** argv)
 	}
 	cvSaveImage("img/004-resample.jpg", dst);
 	#endif*/
-
+	
 	unsigned char key =0;
 	bool particleFlag = true;
 	bool measureFlag = true;
+
+	//ブロック画像作成フェイズ
+	mousePoint.x =100;
+	mousePoint.y =100;
+	while(blockImgDone){
+		cap >> img; // カメラから新しいフレームを取得
+		Rect roiRect = Rect(Point(mousePoint.x-blockSize.width/2, mousePoint.y-blockSize.height/2),
+			Point(mousePoint.x+blockSize.width/2, mousePoint.y+blockSize.height/2));
+		blockImg = img(roiRect);
+		namedWindow("img", CV_WINDOW_AUTOSIZE);
+		setMouseCallback("img", onMouse, "img");
+		imshow("img", img);
+		imshow("blockIMG",blockImg);
+		
+		key = cvWaitKey(33);
+		if( key == 27 ){
+			blockImgDone = false;
+		}
+	}
 
 	//顔検出用クラス
 	FD fd;
@@ -138,7 +181,7 @@ int main(int argc, char** argv)
 		//if(faceDetected){
 			pf->predict();  
 
-			pf->weight(img, faceSize, img);
+			pf->weight(img, blockSize, img);
 
 			pf->measure(p);
 
@@ -147,8 +190,9 @@ int main(int argc, char** argv)
 			// パーティクルの表示
 			if(particleFlag){
 				for(int i=0; i<num; i++){
-					circle(dst, cvPoint( pf->particles[i]->get_x(), pf->particles[i]->get_y() ), 
-						2, CV_RGB(0, 0, 255), CV_FILLED);
+					//circle(dst, cvPoint( pf->particles[i]->get_x(), pf->particles[i]->get_y() ), 2, CV_RGB(0, 0, 255), CV_FILLED);
+					rectangle(dst,Point( pf->particles[i]->get_x()-blockSize.width/2, pf->particles[i]->get_y()-blockSize.height/2),
+						Point( pf->particles[i]->get_x()+blockSize.width/2, pf->particles[i]->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
 				}
 			}
 			// 物体位置（パーティクルの重心）推定結果の表示
