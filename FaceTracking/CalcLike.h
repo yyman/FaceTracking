@@ -11,15 +11,11 @@ public:
 	Size blockSize;
 	Size cellSize;
 	std::vector<double> cell;
-	bool isBase;
 	CalcLike(void);
 	CalcLike(Mat _src, Size _blockSize);
 	~CalcLike(void);
-	Histogram hsvHist(Mat src);//HSVヒストグラム作成
-	void hsvBaseHist(Mat _baseHist);//ベースHSVヒストグラム作成
-	bool isBaseHist();//ベースHSVヒストグラム作成
-	double  CalcLike::calcLikelihood(Histogram srcHist);//バタチャリア距離を計算
-	void CalcLike::calcNormHist(Histogram srcHist, Histogram& dstHist);//HSV各ヒストグラムが合計1になるように正規化
+	double  CalcLike::calcLikelihood(Mat _src, int x, int y, Size _blockSize);
+	double  CalcLike::calc();
 };
 
 #endif /*CALC_LIKE_H_*/
