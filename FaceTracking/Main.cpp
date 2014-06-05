@@ -2,6 +2,7 @@
 #include <iostream>
 #include "PFilter.h"
 #include "FaceDetect.h"
+#include "CalcLike.h"
 
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
@@ -159,6 +160,11 @@ int main(int argc, char** argv)
 			blockImgDone = false;
 		}
 	}
+
+	//尤度計算テスト
+	CalcLike cl = CalcLike(blockImg, blockSize);
+
+	cl.print();
 
 	//顔検出用クラス
 	FD fd;

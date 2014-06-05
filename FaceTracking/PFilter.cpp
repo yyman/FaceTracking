@@ -150,7 +150,7 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize){
 			result = 0.00001;
 		}
 	}
-    cout<<result<<endl;
+    //cout<<result<<endl;
 	/*if(_blockSize.width != 0 && _blockSize.height != 0){
 		double sigma = 1.2;//1.2?  
 		int hx = (x-_blockSize.width/2 > 0)?x-_blockSize.width/2:0;
