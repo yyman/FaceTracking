@@ -7,10 +7,11 @@
 class CalcLike
 {
 public:
-	Mat src,dst;
+	Mat src,averageSrc;
 	Size blockSize;
 	Size cellSize;
 	int cellW,cellH;
+	cv::Scalar centerColor;
 	std::vector<double> cell;
 	CalcLike(void);
 	CalcLike(Mat _src, Size _blockSize);
@@ -18,6 +19,11 @@ public:
 	double CalcLike::calcLikelihood(Mat _src, int x, int y, Size _blockSize);
 	double CalcLike::calc();
 	void CalcLike::print();
+	cv::Scalar CalcLike::getCenterColor();
+	void CalcLike::calcAverageColor();
+	cv::Scalar CalcLike::getColor(int x,int y);
+	Mat CalcLike::getBlockImg();
+	Mat CalcLike::getAverageImg();
 };
 
 #endif /*CALC_LIKE_H_*/

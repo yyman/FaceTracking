@@ -165,6 +165,7 @@ int main(int argc, char** argv)
 	CalcLike cl = CalcLike(blockImg, blockSize);
 
 	cl.print();
+	imshow("average",cl.getAverageImg());
 
 	//顔検出用クラス
 	FD fd;
@@ -203,7 +204,7 @@ int main(int argc, char** argv)
 			}
 			// 物体位置（パーティクルの重心）推定結果の表示
 			if(measureFlag){
-				circle(dst, cvPoint( p->get_x(), p->get_y() ), 10, CV_RGB(255,20,20), CV_FILLED);
+				circle(dst, cvPoint( p->get_x(), p->get_y() ), 10, cl.getCenterColor(), CV_FILLED);
 			}
 		//}
 
