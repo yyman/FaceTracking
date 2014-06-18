@@ -154,7 +154,11 @@ int main(int argc, char** argv)
 		setMouseCallback("img", onMouse, "img");
 		imshow("img", img);
 		imshow("blockIMG",blockImg);
+		img.copyTo(dst);
+		rectangle(dst,roiRect, CV_RGB(0, 0, 255), 2);
 		
+		imshow("rect", dst);
+
 		key = cvWaitKey(33);
 		if( key == 27 ){
 			blockImgDone = false;
