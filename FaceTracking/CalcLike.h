@@ -3,18 +3,22 @@
 #define CALC_LIKE_H_
 
 #include "Define.h"
+#include "Block.h"
 
 class CalcLike
 {
-public:
+private:
 	Mat src,averageSrc;
+	Block base;
 	Size blockSize;
 	Size cellSize;
 	int cellW,cellH;
 	cv::Scalar centerColor;
 	std::vector<double> cell;
-	CalcLike(void);
-	CalcLike(Mat _src, Size _blockSize);
+
+public:
+	CalcLike();
+	CalcLike(Mat _src, Size _blockSize, Size _cellSize);
 	~CalcLike(void);
 	double CalcLike::calcLikelihood(Mat _src, int x, int y, Size _blockSize);
 	double CalcLike::calc();

@@ -68,6 +68,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Block.cpp" />
     <ClCompile Include="calcHSVHist.cpp" />
     <ClCompile Include="FaceDetect.cpp" />
     <ClCompile Include="Histogram.cpp" />
@@ -77,6 +78,7 @@
     <ClCompile Include="CalcLike.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Block.h" />
     <ClInclude Include="calcHSVHist.h" />
     <ClInclude Include="CalcLike.h" />
     <ClInclude Include="Define.h" />

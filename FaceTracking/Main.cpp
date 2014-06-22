@@ -13,6 +13,7 @@ int w = 640;//画面の幅
 int h = 480;//画面の高さ
 int num = 150;//パーティクルの数
 Size blockSize = Size(50,50);//粒子のブロックサイズ（決め打ち）
+Size cellSize = Size(5,5);//粒子のブロックサイズ（決め打ち）
 Point mousePoint;
 bool blockImgDone = true;
 
@@ -166,7 +167,7 @@ int main(int argc, char** argv)
 	}
 
 	//尤度計算テスト
-	CalcLike cl = CalcLike(blockImg, blockSize);
+	CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
 
 	cl.print();
 	imshow("average",cl.getAverageImg());
