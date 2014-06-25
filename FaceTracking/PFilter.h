@@ -4,6 +4,7 @@
 
 #include "Particle.h"
 #include "calcHSVHist.h"
+#include "CalcLike.h"
 
 typedef struct {
 	int x,y, vx,vy;
@@ -29,9 +30,12 @@ private:
 
 	//顔画像のサイズ（ベースヒストグラムとの比較用）
 	Size blockSize;
-
+	
 	//ヒストグラム計算用クラス
 	calcHSVHist ch;
+
+	//ヒストグラム計算用クラス
+	CalcLike cl;
 
 public:
 	//コンストラクタ
@@ -57,6 +61,9 @@ public:
 
 	//パーティクル群の重みつき平均を出力
 	void  measure(Particle* r);
+
+	//比較用クラスのセット
+	void setCL(CalcLike _cl);
 
 };
 #endif /*PFILTER_H_*/

@@ -68,3 +68,11 @@ void Particle::set_vy(int _vy){
 void Particle::setHist(Histogram _pHist){
 	pHist = _pHist;
 }*/
+
+Block Particle::getBlock(){
+	return pBlock;
+}
+
+void Particle::setBlock(Block _pBlock){
+	pBlock = _pBlock;
+}

@@ -119,7 +119,7 @@ void PFilter::weight(Mat img, Size _blockSize, Mat baseImg)
 
 
 // 尤度の計算　ここを編集
-double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize){
+double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,50)){
 	double result =0.0;
 	Mat src,faceImg;
 	src = img;
@@ -213,4 +213,8 @@ void PFilter::measure( Particle* result)
 	result->set_y( (int)y );
 	result->set_vx( (int)vx );
 	result->set_vy( (int)vy );
+}
+
+void PFilter::setCL(CalcLike _cl){
+	cl = _cl;
 }

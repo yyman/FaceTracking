@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Histogram.h"
+#include "Block.h"
 
 class Particle
 {
@@ -15,6 +16,7 @@ public:
 	Particle(int _x, int _y, int _vx, int _vy, double _w);
 
 	Histogram pHist;
+	Block pBlock;
 
 	virtual ~Particle();
 
@@ -24,6 +26,7 @@ public:
 	int get_vy();
 	double getWeight();
 	Histogram getHist();
+	Block getBlock();
 
 	void set_x(int _x);
 	void set_y(int _y);
@@ -31,6 +34,7 @@ public:
 	void set_vy(int _vy);
 	void setWeight(double _w);
 	void setHist(Histogram _pHist);
+	void setBlock(Block _pBlock);
 
 };
 

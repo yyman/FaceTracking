@@ -4,11 +4,6 @@
 #include "FaceDetect.h"
 #include "CalcLike.h"
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
-using namespace std;
-
 int w = 640;//画面の幅
 int h = 480;//画面の高さ
 int num = 150;//パーティクルの数
@@ -179,6 +174,8 @@ int main(int argc, char** argv)
 	Size faceSize = Size(100,100);
 	//ヒストグラム計算用クラス
 	calcHSVHist ch;
+
+	pf->setCL(cl);
 
 	for(;;){
 		//img = cvQueryFrame (capture);
