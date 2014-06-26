@@ -127,15 +127,20 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 	// img が3ch(RGB)の場合
 	if(img.channels() == 3){
 		// RGB 色空間の場合
-		unsigned char b, g, r;
+		unsigned char b, g, r, clb, clg, clr;
 		b = img.data[img.step*y + x*3];     // B
 		g = img.data[img.step*y + x*3 + 1]; // G
 		r = img.data[img.step*y + x*3 + 2]; // R
 
+		Scalar clColor = cl.getCenterColor();
+		clb = clColor[3];
+		clg = clColor[2];
+		clr = clColor[1];
+
 		double dist = 0.0, sigma = 50.0;  
 		// 赤色らしさをユークリッド距離として求める
-		dist = sqrt( b*b + g*g + (255-r)*(255-r));
-	//cout<<dist<<endl;
+		dist = sqrt( (clb-b)*(clb-b) + (clg-g)*(clg-g) + (clr-r)*(clr-r));
+	cout<<dist<<endl;
 		// 距離(dist)を平均、sigmaを分散として持つ、正規分布を尤度関数とする
 		result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-dist*dist/(2.0*sigma*sigma));
 	}
