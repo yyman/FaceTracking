@@ -20,6 +20,7 @@ public:
 
 	virtual ~Block();
 
+	Mat getSrc();
 	int getCellW();
 	int getCellH();
 	Size getBlockSize();
@@ -36,6 +37,9 @@ public:
 	void setCellSize();
 	void setHist(Block _pHist);
 	void calcAverageColor();
+
+	
+	Mat getAverageImg();
 
 };
 

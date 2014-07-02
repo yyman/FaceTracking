@@ -129,9 +129,9 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 		// RGB êFãÛä‘ÇÃèÍçá
 		unsigned char b, g, r;
 		double clb, clg, clr;
-		b = img.data[img.step*y + x*3];     // B
-		g = img.data[img.step*y + x*3 + 1]; // G
-		r = img.data[img.step*y + x*3 + 2]; // R
+		b = img.data[img.step * y + x * 3];     // B
+		g = img.data[img.step * y + x * 3 + 1]; // G
+		r = img.data[img.step * y + x * 3 + 2]; // R
 
 		Scalar clColor = cl.getCenterColor();
 		clb = clColor[0];
@@ -156,6 +156,16 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 			result = 0.00001;
 		}
 	}
+
+	Rect roiRect = Rect(Point(x-_blockSize.width/2, y-_blockSize.height/2),
+						Point(x+_blockSize.width/2, y+_blockSize.height/2));
+	Mat blockImg;
+	src(roiRect).copyTo(blockImg);
+	//waitKey(1000);
+
+	Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
+	cl.calcLikelihood(pBlock);
+
     //cout<<result<<endl;
 	/*if(_blockSize.width != 0 && _blockSize.height != 0){
 		double sigma = 1.2;//1.2?  

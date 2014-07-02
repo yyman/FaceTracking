@@ -23,7 +23,7 @@ Block::Block(Mat _src, Size _blockSize, Size _cellSize)
 
 	int cnt=0;
 	
-	cout<<cellW<<","<<cellH<<endl;
+	//cout<<cellW<<","<<cellH<<endl;
 	for ( int y=0; y<src.rows; ++y) {
 		if(hCount == cellH){
 			hCount = 0;
@@ -51,6 +51,11 @@ Block::Block(Mat _src, Size _blockSize, Size _cellSize)
 }
 
 Block::~Block(){
+}
+
+//src‚ÌŽæ“¾
+Mat Block::getSrc(){
+	return src;
 }
 
 //ƒZƒ‹‚Ì•‚ÌŽæ“¾
@@ -100,5 +105,26 @@ void Block::calcAverageColor(){
 			cell[x*3+cellSize.width*3*y+2] = cell[x*3+cellSize.width*3*y+2]/(cellW*cellH); //R
 		}
 	}
+}
+
+Mat Block::getAverageImg(){
+	averageSrc = Mat(Size(blockSize.width,blockSize.height),CV_8UC3);
+	int cnt = 0;
+	for(int y=0;y<cellSize.height;y++){
+		for(int x=0;x<cellSize.width;x++){
+			for(int by=y*cellH; by<y*cellH+cellH;by++){
+				for(int bx=x*cellW;bx<x*cellW+cellW;bx++){
+					cv::Vec3b &v = averageSrc.at<cv::Vec3b>(by,bx);
+					v[0] = cell[x*3+cellSize.width*3*y+0];
+					v[1] = cell[x*3+cellSize.width*3*y+1];
+					v[2] = cell[x*3+cellSize.width*3*y+2];
+					cnt++;
+				}
+			}
+		}
+	}
+	cout<<cnt<<endl;
+
+	return averageSrc;
 }
 

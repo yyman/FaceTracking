@@ -21,20 +21,27 @@ CalcLike::~CalcLike(void)
 {
 }
 
-double CalcLike::calcLikelihood(Mat _src, int x, int y, Size _blockSize){
+double CalcLike::calcLikelihood(Block bl){
 	double result =0.0;
-	Mat img = _src;
 
 	// RGB 色空間の場合
 	unsigned char b, g, r;
-	b = img.data[img.step*y + x*3];     // B
-	g = img.data[img.step*y + x*3 + 1]; // G
-	r = img.data[img.step*y + x*3 + 2]; // R
+	double baseB, baseG, baseR;
+	Scalar blColor = bl.getCenterColor();
+	b = blColor[0];  // B
+	g = blColor[1];  // G
+	r = blColor[2];  // R
 
+	Scalar baseColor = base.getCenterColor();
+	baseB = baseColor[0];
+	baseG = baseColor[1];
+	baseR = baseColor[2];
+	//cout<<clb<<","<<clg<<","<<clr<<endl;
 	double dist = 0.0, sigma = 50.0;  
-	// 赤色らしさをユークリッド距離として求める
-	dist = sqrt( b*b + g*g + (255-r)*(255-r));
-	//cout<<dist<<endl;
+	// baseの中心色らしさをユークリッド距離として求める
+	dist = sqrt( (baseB-b)*(baseB-b) + (baseG-g)*(baseG-g) + (baseR-r)*(baseR-r));
+	cout<<dist<<endl;
+	imshow("blave",bl.getAverageImg());
 	// 距離(dist)を平均、sigmaを分散として持つ、正規分布を尤度関数とする
 	return result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-dist*dist/(2.0*sigma*sigma));
 }
@@ -50,12 +57,12 @@ void CalcLike::print(){
 		for(int x=0;x<cellSize.width;x++){
 			cout
 				<<
-					cell[x+cellSize.width*3*y+0]//B
-				<<","<<
-					cell[x+cellSize.width*3*y+1]//G
-				<<","<<
-					cell[x+cellSize.width*3*y+2]//R
-				<<" "<<ends;
+				cell[x+cellSize.width*3*y+0]//B
+			<<","<<
+				cell[x+cellSize.width*3*y+1]//G
+			<<","<<
+				cell[x+cellSize.width*3*y+2]//R
+			<<" "<<ends;
 		}
 		cout<<endl;
 	}
@@ -95,4 +102,8 @@ Mat CalcLike::getAverageImg(){
 	cout<<cnt<<endl;
 
 	return averageSrc;
+}
+
+Size CalcLike::getCellSize(){
+	return cellSize;
 }

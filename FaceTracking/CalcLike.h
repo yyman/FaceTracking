@@ -20,7 +20,7 @@ public:
 	CalcLike();
 	CalcLike(Mat _src, Size _blockSize, Size _cellSize);
 	~CalcLike(void);
-	double CalcLike::calcLikelihood(Mat _src, int x, int y, Size _blockSize);
+	double CalcLike::calcLikelihood(Block bl);
 	double CalcLike::calc();
 	void CalcLike::print();
 	cv::Scalar CalcLike::getCenterColor();
@@ -28,6 +28,7 @@ public:
 	cv::Scalar CalcLike::getColor(int x,int y);
 	Mat CalcLike::getBlockImg();
 	Mat CalcLike::getAverageImg();
+	Size CalcLike::getCellSize();
 };
 
 #endif /*CALC_LIKE_H_*/
