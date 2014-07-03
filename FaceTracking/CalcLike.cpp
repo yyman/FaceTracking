@@ -22,28 +22,37 @@ CalcLike::~CalcLike(void)
 }
 
 double CalcLike::calcLikelihood(Block bl){
-	double result =0.0;
+	double result = 0.0;
+	double dist = 0.0, sigma = 50.0, sumDist; 
+	int cellCnt = base.getCellSize().height * base.getCellSize().width;//cellの数
 
 	// RGB 色空間の場合
 	unsigned char b, g, r;
 	double baseB, baseG, baseR;
-	Scalar blColor = bl.getCenterColor();
-	b = blColor[0];  // B
-	g = blColor[1];  // G
-	r = blColor[2];  // R
+	Scalar blColor,baseColor;
+	for(int y = 0; y < base.getCellSize().height; y++){
+		for(int x = 0; x < base.getCellSize().width; x++){
+			blColor = bl.getColor(x,y);
+			b = blColor[0];  // B
+			g = blColor[1];  // G
+			r = blColor[2];  // R
 
-	Scalar baseColor = base.getCenterColor();
-	baseB = baseColor[0];
-	baseG = baseColor[1];
-	baseR = baseColor[2];
-	//cout<<clb<<","<<clg<<","<<clr<<endl;
-	double dist = 0.0, sigma = 50.0;  
-	// baseの中心色らしさをユークリッド距離として求める
-	dist = sqrt( (baseB-b)*(baseB-b) + (baseG-g)*(baseG-g) + (baseR-r)*(baseR-r));
-	cout<<dist<<endl;
-	imshow("blave",bl.getAverageImg());
+			baseColor = base.getColor(x,y);
+			baseB = baseColor[0];
+			baseG = baseColor[1];
+			baseR = baseColor[2];
+			//cout<<clb<<","<<clg<<","<<clr<<endl;
+			// baseの中心色らしさをユークリッド距離として求める
+			sumDist += sqrt( (baseB-b)*(baseB-b) + (baseG-g)*(baseG-g) + (baseR-r)*(baseR-r));//最高で約444（sqrt(256*3)）離れる？
+			//cout<<dist<<endl;
+			//imshow("blave",bl.getAverageImg());
+		}
+	}
+	dist = sumDist / cellCnt;//距離の加重平均
+	cout << sumDist / cellCnt << endl; 
 	// 距離(dist)を平均、sigmaを分散として持つ、正規分布を尤度関数とする
-	return result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-dist*dist/(2.0*sigma*sigma));
+	result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-dist*dist/(2.0*sigma*sigma));
+	return result;
 }
 
 double CalcLike::calc()

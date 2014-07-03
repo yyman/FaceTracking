@@ -123,7 +123,7 @@ Mat Block::getAverageImg(){
 			}
 		}
 	}
-	cout<<cnt<<endl;
+	//cout<<cnt<<endl;
 
 	return averageSrc;
 }

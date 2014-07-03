@@ -161,7 +161,7 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 						Point(x+_blockSize.width/2, y+_blockSize.height/2));
 	Mat blockImg;
 	src(roiRect).copyTo(blockImg);
-	//waitKey(1000);
+	//waitKey(33);
 
 	Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
 	cl.calcLikelihood(pBlock);
