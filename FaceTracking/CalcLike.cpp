@@ -43,7 +43,17 @@ double CalcLike::calcLikelihood(Block bl){
 			baseR = baseColor[2];
 			//cout<<clb<<","<<clg<<","<<clr<<endl;
 			// baseの中心色らしさをユークリッド距離として求める
-			sumDist += sqrt( (baseB-b)*(baseB-b) + (baseG-g)*(baseG-g) + (baseR-r)*(baseR-r));//最高で約444（sqrt(256*3)）離れる？
+
+			switch (y)
+			{
+			case 0:
+			case 4:
+				sumDist += 444 - sqrt( (baseB-b)*(baseB-b) + (baseG-g)*(baseG-g) + (baseR-r)*(baseR-r));//最高で約444（sqrt(256*3)）離れる？
+				break;
+			default:
+				sumDist += sqrt( (baseB-b)*(baseB-b) + (baseG-g)*(baseG-g) + (baseR-r)*(baseR-r));//最高で約444（sqrt(256*3)）離れる？
+				break;
+			}
 			//cout<<dist<<endl;
 			//imshow("blave",bl.getAverageImg());
 		}

@@ -125,7 +125,7 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 	src = img;
 
 	// img ‚ª3ch(RGB)‚Ìê‡
-	if(img.channels() == 3){
+	/*if(img.channels() == 3){
 		// RGB F‹óŠÔ‚Ìê‡
 		unsigned char b, g, r;
 		double clb, clg, clr;
@@ -156,7 +156,7 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 			result = 0.00001;
 		}
 	}
-
+	*/
 	Rect roiRect = Rect(Point(x-_blockSize.width/2, y-_blockSize.height/2),
 						Point(x+_blockSize.width/2, y+_blockSize.height/2));
 	Mat blockImg;

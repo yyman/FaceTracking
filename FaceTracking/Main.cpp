@@ -14,21 +14,21 @@ bool blockImgDone = true;
 
 void onMouse (int event, int x, int y, int flags, void *param = NULL)
 {  char str[64];
-	static int line = 0;
-	// マウスイベントを取得 
-	switch (event) 
-	{
-				case CV_EVENT_LBUTTONDOWN:
-					sprintf (str, "(%d,%d) %s", x, y, "LBUTTON_DOWN");
-					break;
+static int line = 0;
+// マウスイベントを取得 
+switch (event) 
+{
+case CV_EVENT_LBUTTONDOWN:
+	sprintf (str, "(%d,%d) %s", x, y, "LBUTTON_DOWN");
+	break;
 
-				case CV_EVENT_LBUTTONUP:
-					sprintf (str, "(%d,%d) %s", x, y, "LBUTTON_UP");
-					mousePoint.x=(x>blockSize.width)?((x<w-blockSize.width)?x:w-blockSize.width):blockSize.width;
-					mousePoint.y=(y>blockSize.height)?((y<h-blockSize.height)?y:h-blockSize.height):blockSize.height;
-					break;
-	} 
-	
+case CV_EVENT_LBUTTONUP:
+	sprintf (str, "(%d,%d) %s", x, y, "LBUTTON_UP");
+	mousePoint.x=(x>blockSize.width)?((x<w-blockSize.width)?x:w-blockSize.width):blockSize.width;
+	mousePoint.y=(y>blockSize.height)?((y<h-blockSize.height)?y:h-blockSize.height):blockSize.height;
+	break;
+} 
+
 }
 
 int main(int argc, char** argv)
@@ -53,11 +53,11 @@ int main(int argc, char** argv)
 	// OpenCV1を使ってUSBカメラからキャプチャする
 	/*CvCapture *capture = 0;
 	capture = cvCreateCameraCapture(0);
-    if( capture == NULL )
-    {
-		cout<<"not found camera"<<endl;
-        return 0;
-    }
+	if( capture == NULL )
+	{
+	cout<<"not found camera"<<endl;
+	return 0;
+	}
 	cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, w);
 	cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, h);*/
 
@@ -69,20 +69,20 @@ int main(int argc, char** argv)
 	}
 	cap.set(CV_CAP_PROP_FRAME_WIDTH, w);
 	cap.set(CV_CAP_PROP_FRAME_HEIGHT, h);
-    //cap >> img; // カメラから新しいフレームを取得
+	//cap >> img; // カメラから新しいフレームを取得
 
 	// 動画像保存用構造体
 	//CvVideoWriter *vw;
 	// ビデオライタ構造体を作成（ 640x480, 10fps, avi(mpeg4) ）
 	// vw = cvCreateVideoWriter ("result/cap.avi", CV_FOURCC ('X', 'V', 'I', 'D'), 10, cvSize ((int) w, (int) h));
-	
+
 	//OpenCV2　動画保存
 	string outputPath = "result/cap.avi";
 	double outputFPS = 30;
 	Size outputSize = Size(w, h);
 	VideoWriter writer(outputPath, CV_FOURCC_DEFAULT, outputFPS, outputSize);
 	//Mat frame;
-    //writer << frame; // フレームを保存
+	//writer << frame; // フレームを保存
 	//writer.release();//すべてが終了したら解放
 
 	// 観測画像
@@ -133,61 +133,63 @@ int main(int argc, char** argv)
 	}
 	cvSaveImage("img/004-resample.jpg", dst);
 	#endif*/
-	
-	unsigned char key =0;
+
+	unsigned char key = 0;
 	bool particleFlag = true;
 	bool measureFlag = true;
+	bool loopFlag = true;
+	while(loopFlag){
 
-	//ブロック画像作成フェイズ
-	mousePoint.x =100;
-	mousePoint.y =100;
-	while(blockImgDone){
-		cap >> img; // カメラから新しいフレームを取得
-		Rect roiRect = Rect(Point(mousePoint.x-blockSize.width/2, mousePoint.y-blockSize.height/2),
-			Point(mousePoint.x+blockSize.width/2, mousePoint.y+blockSize.height/2));
-		blockImg = img(roiRect);
-		namedWindow("img", CV_WINDOW_AUTOSIZE);
-		setMouseCallback("img", onMouse, "img");
-		imshow("img", img);
-		imshow("blockIMG",blockImg);
-		img.copyTo(dst);
-		rectangle(dst,roiRect, CV_RGB(0, 0, 255), 2);
-		
-		imshow("rect", dst);
+		//ブロック画像作成フェイズ
+		mousePoint.x = 100;
+		mousePoint.y = 100;
+		while(blockImgDone){
+			cap >> img; // カメラから新しいフレームを取得
+			Rect roiRect = Rect(Point(mousePoint.x-blockSize.width/2, mousePoint.y-blockSize.height/2),
+				Point(mousePoint.x+blockSize.width/2, mousePoint.y+blockSize.height/2));
+			blockImg = img(roiRect);
+			namedWindow("img", CV_WINDOW_AUTOSIZE);
+			setMouseCallback("img", onMouse, "img");
+			imshow("img", img);
+			imshow("blockIMG",blockImg);
+			img.copyTo(dst);
+			rectangle(dst,roiRect, CV_RGB(0, 0, 255), 2);
 
-		key = cvWaitKey(33);
-		if( key == 27 ){
-			blockImgDone = false;
+			imshow("rect", dst);
+
+			key = cvWaitKey(33);
+			if( key == 27 ){
+				blockImgDone = false;
+			}
 		}
-	}
 
-	//尤度計算テスト
-	CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
+		//尤度計算テスト
+		CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
 
-	cl.print();
-	imshow("average",cl.getAverageImg());
+		cl.print();
+		imshow("average",cl.getAverageImg());
 
-	//顔検出用クラス
-	FD fd;
-	//顔検出の成否
-	bool faceDetected = false;
-	Size faceSize = Size(100,100);
-	//ヒストグラム計算用クラス
-	calcHSVHist ch;
+		//顔検出用クラス
+		FD fd;
+		//顔検出の成否
+		bool faceDetected = false;
+		Size faceSize = Size(100,100);
+		//ヒストグラム計算用クラス
+		calcHSVHist ch;
 
-	pf->setCL(cl);
+		pf->setCL(cl);
 
-	for(;;){
-		//img = cvQueryFrame (capture);
-		cap >> img; // カメラから新しいフレームを取得
-		dst = img;
+		for(;;){
+			//img = cvQueryFrame (capture);
+			cap >> img; // カメラから新しいフレームを取得
+			dst = img;
 
-		//顔検出
-		//if(!faceDetected){
-		//	faceDetected = fd.detect(img,ch);
+			//顔検出
+			//if(!faceDetected){
+			//	faceDetected = fd.detect(img,ch);
 			//faceSize = fd.getFaceImage().size();
-		//}
-		//if(faceDetected){
+			//}
+			//if(faceDetected){
 			pf->predict();  
 
 			pf->weight(img, blockSize, img);
@@ -208,30 +210,36 @@ int main(int argc, char** argv)
 			if(measureFlag){
 				circle(dst, cvPoint( p->get_x(), p->get_y() ), 10, cl.getCenterColor(), CV_FILLED);
 			}
-		//}
+			//}
 
 
-		// ビデオに書き出し
-		//  cvWriteFrame (vw, dst);
+			// ビデオに書き出し
+			//  cvWriteFrame (vw, dst);
 
-		imshow("img", img);
-		imshow("dst", dst);
+			imshow("img", img);
+			imshow("dst", dst);
 
-		key = cvWaitKey(33);
-		if( key == 27 ){
-			break;
+			key = cvWaitKey(33);
+			if( key == 27 ){
+				loopFlag = false;//ESCで終了
+				break;
+			}
+			else if((char)key == 'q'){
+				blockImgDone = false;//Qでブロック画像選択に戻る
+				break;
+			}
+			switch( (char)key ){
+			case 'p':
+				particleFlag = !particleFlag;
+				break;
+			case 'm':
+				measureFlag = !measureFlag;
+				break;
+			default:
+				break;
+			}
+
 		}
-		switch( (char)key ){
-		case 'p':
-			particleFlag = !particleFlag;
-			break;
-		case 'm':
-			measureFlag = !measureFlag;
-			break;
-		default:
-			break;
-		}
-
 	}
 	cout << "test end." << endl;
 	return 0;
