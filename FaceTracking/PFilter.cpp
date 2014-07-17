@@ -164,7 +164,7 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 	//waitKey(33);
 
 	Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
-	cl.calcLikelihood(pBlock);
+	result = cl.calcLikelihood(pBlock);
 
     //cout<<result<<endl;
 	/*if(_blockSize.width != 0 && _blockSize.height != 0){

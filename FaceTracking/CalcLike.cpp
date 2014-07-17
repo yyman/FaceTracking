@@ -23,7 +23,7 @@ CalcLike::~CalcLike(void)
 
 double CalcLike::calcLikelihood(Block bl){
 	double result = 0.0;
-	double dist = 0.0, sigma = 50.0, sumDist; 
+	double dist = 0.0, sigma = 50.0, sumDist = 0.0; 
 	int cellCnt = base.getCellSize().height * base.getCellSize().width;//cellの数
 
 	// RGB 色空間の場合
@@ -49,7 +49,7 @@ double CalcLike::calcLikelihood(Block bl){
 		}
 	}
 	dist = sumDist / cellCnt;//距離の加重平均
-	cout << sumDist / cellCnt << endl; 
+	cout << dist << endl; 
 	// 距離(dist)を平均、sigmaを分散として持つ、正規分布を尤度関数とする
 	result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-dist*dist/(2.0*sigma*sigma));
 	return result;
