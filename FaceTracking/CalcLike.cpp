@@ -50,10 +50,10 @@ double CalcLike::calcLikelihood(Block bl){
 			{
 			case 0:
 			case 4:
-				sumDist += 444 - sqrt( (baseB-b)*(baseB-b) + (baseG-g)*(baseG-g) + (baseR-r)*(baseR-r));//最高で約444（sqrt(256*3)）離れる？
+				sumDist += sqrt((baseB-b)*(baseB-b) + (baseG-g)*(baseG-g) + (baseR-r)*(baseR-r));//最高で約444（sqrt(256*3)）離れる？
 				break;
 			default:
-				sumDist += sqrt( (baseB-b)*(baseB-b) + (baseG-g)*(baseG-g) + (baseR-r)*(baseR-r));//最高で約444（sqrt(256*3)）離れる？
+				sumDist += sqrt((baseB-b)*(baseB-b) + (baseG-g)*(baseG-g) + (baseR-r)*(baseR-r));
 				break;
 			}
 			//cout<<dist<<endl;
