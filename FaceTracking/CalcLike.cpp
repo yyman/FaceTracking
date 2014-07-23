@@ -19,6 +19,8 @@ CalcLike::CalcLike(Mat _src, Size _blockSize, Size _cellSize)
 
 CalcLike::~CalcLike(void)
 {
+	src.release();
+	averageSrc.release();
 }
 
 double CalcLike::calcLikelihood(Block bl){
@@ -118,7 +120,7 @@ Mat CalcLike::getAverageImg(){
 			}
 		}
 	}
-	cout<<cnt<<endl;
+	//cout<<cnt<<endl;
 
 	return averageSrc;
 }

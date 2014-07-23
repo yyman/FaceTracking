@@ -51,6 +51,8 @@ Block::Block(Mat _src, Size _blockSize, Size _cellSize)
 }
 
 Block::~Block(){
+	src.release();
+	averageSrc.release();
 }
 
 //src�̎擾

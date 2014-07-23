@@ -147,14 +147,13 @@ int main(int argc, char** argv)
 			cap >> img; // カメラから新しいフレームを取得
 			Rect roiRect = Rect(Point(mousePoint.x-blockSize.width/2, mousePoint.y-blockSize.height/2),
 				Point(mousePoint.x+blockSize.width/2, mousePoint.y+blockSize.height/2));
-			blockImg = img(roiRect);
+			img(roiRect).copyTo(blockImg);
 			namedWindow("img", CV_WINDOW_AUTOSIZE);
 			setMouseCallback("img", onMouse, "img");
 			imshow("img", img);
 			imshow("blockIMG",blockImg);
 			img.copyTo(dst);
 			rectangle(dst,roiRect, CV_RGB(0, 0, 255), 2);
-
 			imshow("rect", dst);
 
 			key = cvWaitKey(33);
@@ -168,6 +167,7 @@ int main(int argc, char** argv)
 
 		cl.print();
 		imshow("average",cl.getAverageImg());
+		imshow("blockImg",blockImg);
 
 		//顔検出用クラス
 		FD fd;
@@ -225,7 +225,7 @@ int main(int argc, char** argv)
 				break;
 			}
 			else if((char)key == 'q'){
-				blockImgDone = false;//Qでブロック画像選択に戻る
+				blockImgDone = true;//Qでブロック画像選択に戻る
 				break;
 			}
 			switch( (char)key ){
@@ -240,6 +240,7 @@ int main(int argc, char** argv)
 			}
 
 		}
+		//delete &cl;
 	}
 	cout << "test end." << endl;
 	return 0;
