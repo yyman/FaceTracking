@@ -167,7 +167,7 @@ int main(int argc, char** argv)
 
 		cl.print();
 		imshow("average",cl.getAverageImg());
-		imshow("blockImg",blockImg);
+		//imshow("blockImg",blockImg);
 
 		//顔検出用クラス
 		FD fd;
@@ -175,9 +175,12 @@ int main(int argc, char** argv)
 		bool faceDetected = false;
 		Size faceSize = Size(100,100);
 		//ヒストグラム計算用クラス
-		calcHSVHist ch;
-
+		calcHSVHist ch = calcHSVHist(blockImg);
+		
 		pf->setCL(cl);
+		pf->setCH(ch);
+
+		ch.baseHist.show("baseHist");
 
 		for(;;){
 			//img = cvQueryFrame (capture);
@@ -201,14 +204,16 @@ int main(int argc, char** argv)
 			// パーティクルの表示
 			if(particleFlag){
 				for(int i=0; i<num; i++){
-					//circle(dst, cvPoint( pf->particles[i]->get_x(), pf->particles[i]->get_y() ), 2, CV_RGB(0, 0, 255), CV_FILLED);
-					rectangle(dst,Point( pf->particles[i]->get_x()-blockSize.width/2, pf->particles[i]->get_y()-blockSize.height/2),
-						Point( pf->particles[i]->get_x()+blockSize.width/2, pf->particles[i]->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
+					circle(dst, cvPoint( pf->particles[i]->get_x(), pf->particles[i]->get_y() ), 1, CV_RGB(255, 0, 0), CV_FILLED);
+					//rectangle(dst,Point( pf->particles[i]->get_x()-blockSize.width/2, pf->particles[i]->get_y()-blockSize.height/2),
+						//Point( pf->particles[i]->get_x()+blockSize.width/2, pf->particles[i]->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
 				}
 			}
 			// 物体位置（パーティクルの重心）推定結果の表示
 			if(measureFlag){
-				circle(dst, cvPoint( p->get_x(), p->get_y() ), 10, cl.getCenterColor(), CV_FILLED);
+				//circle(dst, cvPoint( p->get_x(), p->get_y() ), 10, cl.getCenterColor(), CV_FILLED);
+				rectangle(dst,Point( p->get_x()-blockSize.width/2, p->get_y()-blockSize.height/2),
+					Point( p->get_x()+blockSize.width/2, p->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
 			}
 			//}
 

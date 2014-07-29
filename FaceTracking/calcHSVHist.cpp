@@ -93,12 +93,19 @@ double  calcHSVHist::calcLikelihood(Histogram srcHist)//バタチャリア距離で尤度を
        like_s += std::sqrt(baseNormHist.getVal(2,i)*srcNormHist.getVal(2,i));
        like_v += std::sqrt(baseNormHist.getVal(3,i)*srcNormHist.getVal(3,i));
     }
-	
+	//各HSVで負の対数をとる
+	like_h = -logf(like_h);
+	like_s = -logf(like_s);
+	like_v = -logf(like_v);
+
 	//求めた類似度を二乗した和のルートを求める
-	like_hsv = std::sqrt(std::pow(like_h,like_h)+std::pow(like_s,like_s)+std::pow(like_v,like_v));
+	//like_hsv = std::sqrt(std::pow(like_h,like_h)+std::pow(like_s,like_s)+std::pow(like_v,like_v));
 	
-		//cout << like_h << like_s << like_v << endl;
-	return like_hsv;
+	//求めた類似度の平均をとる
+	like_hsv = like_h * like_s * like_v / 3.0;
+	
+		//cout << like_h << "," << like_s << "," << like_v << endl;
+	return like_h;
 }
 
 

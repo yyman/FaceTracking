@@ -34,7 +34,7 @@ private:
 	//ヒストグラム計算用クラス
 	calcHSVHist ch;
 
-	//ヒストグラム計算用クラス
+	//計算用クラス
 	CalcLike cl;
 
 public:
@@ -61,9 +61,11 @@ public:
 
 	//パーティクル群の重みつき平均を出力
 	void  measure(Particle* r);
-
+	
 	//比較用クラスのセット
 	void setCL(CalcLike _cl);
+	//ヒストグラム計算用クラスのセット
+	void setCH(calcHSVHist _ch);
 
 };
 #endif /*PFILTER_H_*/

@@ -163,23 +163,24 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 	src(roiRect).copyTo(blockImg);
 	//waitKey(33);
 
-	Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
-	result = cl.calcLikelihood(pBlock);
+	//Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
+	//result = cl.calcLikelihood(pBlock);
 
     //cout<<result<<endl;
-	/*if(_blockSize.width != 0 && _blockSize.height != 0){
-		double sigma = 1.2;//1.2?  
+	if(_blockSize.width != 0 && _blockSize.height != 0){
+		//double sigma = 1;//1.2?  
 		int hx = (x-_blockSize.width/2 > 0)?x-_blockSize.width/2:0;
 		int hy = (y-_blockSize.height/2 > 0)?y-_blockSize.height/2:0;
 		int hw = (x+_blockSize.width/2 < img.size().width)?_blockSize.width:_blockSize.width-(x+_blockSize.width/2-img.size().width)-1;
 		int hh = (y+_blockSize.height/2 < img.size().height)?_blockSize.height:_blockSize.height-(y+_blockSize.height/2-img.size().height)-1;
 		//cout << hx << "," << hy << "," << hw << "," << hh << endl;
-		faceImg = src(Rect(hx,hy,hw,hh));
-		double l = ch.calcLikelihood(ch.hsvHist(faceImg));
-		result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-l*l/(2.0*sigma*sigma));
+		//faceImg = src(Rect(hx,hy,hw,hh));
+		double dist = ch.calcLikelihood(ch.hsvHist(blockImg));
+		//ch.hsvHist(blockImg).show("particleHist");
+		result = 1.0 / expf(dist);
 		//system("cls");
-		//cout<<l<<","<<result<<endl;
-	}*/
+		//cout<<dist<<","<<result<<endl;
+	}
 	return result;
 }
 
@@ -233,4 +234,7 @@ void PFilter::measure( Particle* result)
 
 void PFilter::setCL(CalcLike _cl){
 	cl = _cl;
+}
+void PFilter::setCH(calcHSVHist _ch){
+	ch = _ch;
 }
