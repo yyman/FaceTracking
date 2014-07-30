@@ -176,7 +176,9 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 		//cout << hx << "," << hy << "," << hw << "," << hh << endl;
 		//faceImg = src(Rect(hx,hy,hw,hh));
 		double dist = ch.calcLikelihood(ch.hsvHist(blockImg));
-		//ch.hsvHist(blockImg).show("particleHist");
+		Histogram normHist;
+		ch.calcNormHist(ch.hsvHist(blockImg), normHist);
+		normHist.show("particleHist");
 		result = 1.0 / expf(dist);
 		//system("cls");
 		//cout<<dist<<","<<result<<endl;

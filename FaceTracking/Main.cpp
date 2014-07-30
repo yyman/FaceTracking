@@ -180,7 +180,7 @@ int main(int argc, char** argv)
 		pf->setCL(cl);
 		pf->setCH(ch);
 
-		ch.baseHist.show("baseHist");
+		ch.baseNormHist.show("baseHist");
 
 		for(;;){
 			//img = cvQueryFrame (capture);
