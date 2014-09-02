@@ -28,8 +28,14 @@ private:
 	//パーティクル数
 	int num;
 
+	//重みの合計
+	double wSum;
+
 	//顔画像のサイズ（ベースヒストグラムとの比較用）
 	Size blockSize;
+
+	//入力フレーム
+	Mat src;
 	
 	//ヒストグラム計算用クラス
 	calcHSVHist ch;

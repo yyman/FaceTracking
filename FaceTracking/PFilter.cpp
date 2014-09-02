@@ -97,6 +97,7 @@ void PFilter::predict(){
 //予測後の各パーティクルについて重み付けを行う
 void PFilter::weight(Mat img, Size _blockSize, Mat baseImg)
 {
+	//GaussianBlur(img, src, Size(5, 5), 10,10);
 	if(!ch.isBaseHist()){
 		ch.hsvBaseHist(baseImg);
 	}
@@ -107,12 +108,12 @@ void PFilter::weight(Mat img, Size _blockSize, Mat baseImg)
 	}
 
 	//正規化
-	double sum = 0.0;
+	wSum = 0.0;
 	for(int i=0; i<num; i++){
-		sum += pre_particles[i]->getWeight();
+		wSum += pre_particles[i]->getWeight();
 	}
 	for(int i=0; i<num; i++){
-		double w = pre_particles[i]->getWeight() / sum;
+		double w = pre_particles[i]->getWeight() / wSum;
 		pre_particles[i]->setWeight( w );
 	}
 }
@@ -121,8 +122,8 @@ void PFilter::weight(Mat img, Size _blockSize, Mat baseImg)
 // 尤度の計算　ここを編集
 double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,50)){
 	double result =0.0;
-	Mat src,faceImg;
-	src = img;
+	Mat faceImg;
+	img.copyTo(src);
 
 	// img が3ch(RGB)の場合
 	/*if(img.channels() == 3){
@@ -163,25 +164,25 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 	src(roiRect).copyTo(blockImg);
 	//waitKey(33);
 
-	//Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
-	//result = cl.calcLikelihood(pBlock);
+	Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
+	result = cl.calcLikelihood(pBlock);
 
     //cout<<result<<endl;
 	if(_blockSize.width != 0 && _blockSize.height != 0){
 		//double sigma = 1;//1.2?  
-		int hx = (x-_blockSize.width/2 > 0)?x-_blockSize.width/2:0;
+		/*int hx = (x-_blockSize.width/2 > 0)?x-_blockSize.width/2:0;
 		int hy = (y-_blockSize.height/2 > 0)?y-_blockSize.height/2:0;
 		int hw = (x+_blockSize.width/2 < img.size().width)?_blockSize.width:_blockSize.width-(x+_blockSize.width/2-img.size().width)-1;
-		int hh = (y+_blockSize.height/2 < img.size().height)?_blockSize.height:_blockSize.height-(y+_blockSize.height/2-img.size().height)-1;
+		int hh = (y+_blockSize.height/2 < img.size().height)?_blockSize.height:_blockSize.height-(y+_blockSize.height/2-img.size().height)-1;*/
 		//cout << hx << "," << hy << "," << hw << "," << hh << endl;
 		//faceImg = src(Rect(hx,hy,hw,hh));
-		double dist = ch.calcLikelihood(ch.hsvHist(blockImg));
-		Histogram normHist;
-		ch.calcNormHist(ch.hsvHist(blockImg), normHist);
-		normHist.show("particleHist");
-		result = 1.0 / expf(dist);
+		//double dist = ch.calcLikelihood(ch.hsvHist(blockImg));
+		//Histogram normHist = Histogram(52,3);
+		//ch.calcNormHist(ch.hsvHist(blockImg), normHist);
+		//normHist.show("particleHist");
+		//result = dist;
 		//system("cls");
-		//cout<<dist<<","<<result<<endl;
+		//cout<<result<<endl;
 	}
 	return result;
 }
@@ -210,21 +211,23 @@ void PFilter::resample()
 				particles[i]->set_y( pre_particles[j]->get_y() );
 				particles[i]->set_vx( pre_particles[j]->get_vx() );
 				particles[i]->set_vy( pre_particles[j]->get_vy() );
-				//particles[i]->setWeight( pre_particles[j]->getWeight() );
-				particles[i]->setWeight( 0.0 );
+				particles[i]->setWeight( pre_particles[j]->getWeight() );
+				//particles[i]->setWeight( 0.0 );
 				break;
 			}     
 		}
 	}
 }
 
-//パーティクルの重みつき平均を推定結果
+//パーティクルの重みつき平均を推定結果とする
 void PFilter::measure( Particle* result)
 {
 	double x=0, y=0, vx=0, vy=0;
-	for(int i=0; i<num; i++){
+	for (int i = 0; i<num; i++){
 		x += (double)particles[i]->get_x() * particles[i]->getWeight();
 		y += (double)particles[i]->get_y() * particles[i]->getWeight();
+		//x += (double)particles[i]->get_x() * wSum * particles[i]->getWeight() * particles[i]->getWeight();
+		//y += (double)particles[i]->get_y() * wSum * particles[i]->getWeight() * particles[i]->getWeight();
 		vx += (double)particles[i]->get_vx() * particles[i]->getWeight();
 		vy += (double)particles[i]->get_vy() * particles[i]->getWeight();
 	}
@@ -232,6 +235,16 @@ void PFilter::measure( Particle* result)
 	result->set_y( (int)y );
 	result->set_vx( (int)vx );
 	result->set_vy( (int)vy );
+
+	//cout << wSum << endl;
+
+	/*Rect roiRect = Rect(Point(x - blockSize.width / 2, y - blockSize.height / 2),
+		Point(x + blockSize.width / 2, y + blockSize.height / 2));
+	Mat blockImg2;
+	src(roiRect).copyTo(blockImg2);
+	Histogram normHist2 = Histogram(52,3);
+	ch.calcNormHist(ch.hsvHist(blockImg2), normHist2);
+	normHist2.show("particleHist");*/
 }
 
 void PFilter::setCL(CalcLike _cl){

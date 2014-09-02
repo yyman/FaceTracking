@@ -6,7 +6,7 @@
 
 int w = 640;//画面の幅
 int h = 480;//画面の高さ
-int num = 150;//パーティクルの数
+int num = 100;//パーティクルの数
 Size blockSize = Size(50,50);//粒子のブロックサイズ（決め打ち）
 Size cellSize = Size(5,5);//粒子のブロックサイズ（決め打ち）
 Point mousePoint;
@@ -185,7 +185,7 @@ int main(int argc, char** argv)
 		for(;;){
 			//img = cvQueryFrame (capture);
 			cap >> img; // カメラから新しいフレームを取得
-			dst = img;
+			img.copyTo(dst);
 
 			//顔検出
 			//if(!faceDetected){
@@ -204,9 +204,10 @@ int main(int argc, char** argv)
 			// パーティクルの表示
 			if(particleFlag){
 				for(int i=0; i<num; i++){
-					circle(dst, cvPoint( pf->particles[i]->get_x(), pf->particles[i]->get_y() ), 1, CV_RGB(255, 0, 0), CV_FILLED);
+					circle(dst, cvPoint(pf->particles[i]->get_x(), pf->particles[i]->get_y()), pf->particles[i]->getWeight()*num*10 , CV_RGB(255, 0, 0), CV_FILLED);
 					//rectangle(dst,Point( pf->particles[i]->get_x()-blockSize.width/2, pf->particles[i]->get_y()-blockSize.height/2),
 						//Point( pf->particles[i]->get_x()+blockSize.width/2, pf->particles[i]->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
+					//cout << pf->particles[i]->getWeight() << endl;
 				}
 			}
 			// 物体位置（パーティクルの重心）推定結果の表示
@@ -221,7 +222,7 @@ int main(int argc, char** argv)
 			// ビデオに書き出し
 			//  cvWriteFrame (vw, dst);
 
-			imshow("img", img);
+			//imshow("img", img);
 			imshow("dst", dst);
 
 			key = cvWaitKey(33);

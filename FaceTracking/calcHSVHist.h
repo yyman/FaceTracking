@@ -7,6 +7,9 @@
 
 class calcHSVHist
 {
+private:
+	int maxBin;
+	int maxDim;
 public:
 	std::vector<Histogram> hists;
 	Histogram baseHist;

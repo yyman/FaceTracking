@@ -62,12 +62,12 @@ void Histogram::increment(int dim, int bin)
 void Histogram::show(char* widowName)
 {
 	//cout<<maxBin<<endl;
-	Mat dst(cv::Size( bins*dimension, 256), CV_8UC3, cv::Scalar::all(255));
+	Mat dst(cv::Size( bins*dimension, bins), CV_8UC3, cv::Scalar::all(255));
     Scalar colorH = cv::Scalar::all(100);//bin‚ÌF
     Scalar colorS = cv::Scalar::all(50);//bin‚ÌF
     Scalar colorV = cv::Scalar::all(0);//bin‚ÌF
 	int normVal;
-	double norm = 256/((val[maxBin]>0)?val[maxBin]:256);
+	double norm = bins/((val[maxBin]>0)?val[maxBin]:bins);
 	for ( int x=0; x < dst.cols; ++x ) {
 		Scalar color;
 		if(x < bins) color = colorH;

@@ -10,23 +10,25 @@ calcHSVHist::calcHSVHist(Mat _baseImg)
 {
 	Mat srcHSV;
 	baseImg = _baseImg;
-	int maxBin = 256;
-	int maxDim = 3;
-	cvtColor(baseImg,srcHSV,CV_BGR2HSV);
+	maxBin = 26;//256の5分の1の51.4の値
+	maxDim = 3;
+	cvtColor(baseImg, srcHSV, CV_BGR2HSV);
+	baseHist = Histogram(maxBin, maxDim);
+	baseNormHist = Histogram(maxBin, maxDim);
 
 	for ( int y=0; y<srcHSV.rows; ++y ) {
         for ( int x=0; x<srcHSV.cols; ++x ) {
             cv::Vec3b &v = srcHSV.at<cv::Vec3b>(y,x);
-			baseHist.increment(1,v[0]); // H
-            baseHist.increment(2,v[1]); // S 
-            baseHist.increment(3,v[2]); // V 
+			baseHist.increment(1,v[0]/10); // H
+            baseHist.increment(2,v[1]/10); // S 
+            baseHist.increment(3,v[2]/10); // V 
         }
     }
 	calcNormHist(baseHist, baseNormHist);
-
+	//baseHist.show("h");
+	//baseNormHist.show("");
 	isBase = true;
 }
-
 
 calcHSVHist::~calcHSVHist(void)
 {
@@ -36,17 +38,15 @@ calcHSVHist::~calcHSVHist(void)
 Histogram calcHSVHist::hsvHist(Mat src)
 {
 	Mat srcHSV;
-	int maxBin = 256;
-	int maxDim = 3;
 	cvtColor(src,srcHSV,CV_BGR2HSV);
 	Histogram hsvHist(maxBin,maxDim);
 
 	for ( int y=0; y<srcHSV.rows; ++y ) {
         for ( int x=0; x<srcHSV.cols; ++x ) {
             cv::Vec3b &v = srcHSV.at<cv::Vec3b>(y,x);
-			hsvHist.increment(1,v[0]); // H
-            hsvHist.increment(2,v[1]); // S 
-            hsvHist.increment(3,v[2]); // V 
+			hsvHist.increment(1,v[0]/10); // H
+            hsvHist.increment(2,v[1]/10); // S 
+            hsvHist.increment(3,v[2]/10); // V 
         }
     }
 	return hsvHist;
@@ -55,29 +55,28 @@ Histogram calcHSVHist::hsvHist(Mat src)
 void calcHSVHist::hsvBaseHist(Mat _baseImg)
 {
 	Mat srcHSV;
-	baseImg = _baseImg;
-	int maxBin = 256;
-	int maxDim = 3;
+	_baseImg.copyTo(baseImg);
 	cvtColor(baseImg,srcHSV,CV_BGR2HSV);
 
 	for ( int y=0; y<srcHSV.rows; ++y ) {
         for ( int x=0; x<srcHSV.cols; ++x ) {
             cv::Vec3b &v = srcHSV.at<cv::Vec3b>(y,x);
-			baseHist.increment(1,v[0]); // H
-            baseHist.increment(2,v[1]); // S 
-            baseHist.increment(3,v[2]); // V 
+			baseHist.increment(1,v[0]/10); // H
+            baseHist.increment(2,v[1]/10); // S 
+            baseHist.increment(3,v[2]/10); // V 
         }
     }
 	calcNormHist(baseHist, baseNormHist);
+	//srcHSV.release;
 }
 
 
 double  calcHSVHist::calcLikelihood(Histogram srcHist)//バタチャリア距離で尤度を計算
 {
-	Histogram srcNormHist;
+	Histogram srcNormHist = Histogram(maxBin, maxDim);
 	calcNormHist(srcHist, srcNormHist);
-	double like_h = .0, like_s = .0, like_v = .0, like_hsv = .0;
-	double a,b,ab,ab2,rab,rab2,rab3;
+	double like_h = .0, like_s = .0, like_v = .0, like_hsv = .0, like_hv = .0;
+	//double a,b,ab,ab2,rab,rab2,rab3;
 
 	//各ビンのsqrt(base*hist)の合計して類似度を求める
 	for ( int i=0; i<baseNormHist.getBins(); ++i ) {
@@ -94,15 +93,16 @@ double  calcHSVHist::calcLikelihood(Histogram srcHist)//バタチャリア距離で尤度を
        like_v += std::sqrt(baseNormHist.getVal(3,i)*srcNormHist.getVal(3,i));
     }
 	//各HSVで負の対数をとる
-	like_h = -logf(like_h);
-	like_s = -logf(like_s);
-	like_v = -logf(like_v);
+	//like_h = -logf(like_h);
+	//like_s = -logf(like_s);
+	//like_v = -logf(like_v);
 
 	//求めた類似度を二乗した和のルートを求める
 	//like_hsv = std::sqrt(std::pow(like_h,like_h)+std::pow(like_s,like_s)+std::pow(like_v,like_v));
 	
 	//求めた類似度の平均をとる
-	like_hsv = like_h * like_s * like_v / 3.0;
+	//like_hsv = like_h + like_s + like_v / 3.0;
+	like_hv = (like_h + like_v)/2;
 	
 		//cout << like_h << "," << like_s << "," << like_v << endl;
 	return like_h;
@@ -119,14 +119,21 @@ void calcHSVHist::calcNormHist(Histogram srcHist, Histogram& dstHist)//HSV各ヒス
        sum_s += srcHist.getVal(2,i);
        sum_v += srcHist.getVal(3,i);
     }
-		
+	//int sumpixs = baseImg.rows*baseImg.cols;
+
 	//cout << sum_h << sum_s << sum_v << endl;
+	//cout << sumpixs << endl;
 
 	//求めた合計で各ビンを割る
-	for ( int i=0; i<baseHist.getBins(); ++i ) {
-       dstHist.setVal(1,i,srcHist.getVal(1,i) / sum_h);
-       dstHist.setVal(2,i,srcHist.getVal(2,i) / sum_s);
-       dstHist.setVal(3,i,srcHist.getVal(3,i) / sum_v);
+	for (int i = 0; i<srcHist.getBins(); ++i) {
+		dstHist.setVal(1, i, srcHist.getVal(1, i) / sum_h);
+		dstHist.setVal(2, i, srcHist.getVal(2, i) / sum_s);
+		dstHist.setVal(3, i, srcHist.getVal(3, i) / sum_v);
+		//cout << srcHist.getVal(1, i) / sum_h << endl;
+		//dstHist.setVal(1, i, srcHist.getVal(1, i) / sumpixs);
+		//dstHist.setVal(2, i, srcHist.getVal(2, i) / sumpixs);
+		//dstHist.setVal(3, i, srcHist.getVal(3, i) / sumpixs);
+		//cout << srcHist.getVal(1, i) / sumpixs << endl;
     }
 }
 
