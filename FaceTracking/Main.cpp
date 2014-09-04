@@ -83,6 +83,7 @@ int main(int argc, char** argv)
 	VideoWriter writer(outputPath, CV_FOURCC_DEFAULT, outputFPS, outputSize);
 	//Mat frame;
 	//writer << frame; // フレームを保存
+	if(!writer.isOpened()) return -1;
 	//writer.release();//すべてが終了したら解放
 
 	// 観測画像
@@ -181,6 +182,11 @@ int main(int argc, char** argv)
 		pf->setCH(ch);
 
 		ch.baseNormHist.show("baseHist");
+
+		//ヒストグラムテスト用
+		Mat srctes = imread("C:\\Users\\ymaday\\Pictures\\tes.jpg");
+		calcHSVHist chtes = calcHSVHist(srctes);
+		chtes.baseNormHist.show("tes");
 
 		for(;;){
 			//img = cvQueryFrame (capture);

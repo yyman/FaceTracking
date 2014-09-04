@@ -1,5 +1,6 @@
 #include "calcHSVHist.h"
 
+const int divisor = 20;
 
 calcHSVHist::calcHSVHist(void)
 {
@@ -10,7 +11,10 @@ calcHSVHist::calcHSVHist(Mat _baseImg)
 {
 	Mat srcHSV;
 	baseImg = _baseImg;
-	maxBin = 26;//256の5分の1の51.4の値
+	maxBin = 13;//256の20分の1の12.8の値を繰り上げ
+	//maxBin = 18;//256の15分の1の17.0~の値を繰り上げ
+	//maxBin = 26;//256の10分の1の25.6の値を繰り上げ
+	//maxBin = 52;//256の5分の1の51.2の値を繰り上げ
 	maxDim = 3;
 	cvtColor(baseImg, srcHSV, CV_BGR2HSV);
 	baseHist = Histogram(maxBin, maxDim);
@@ -19,9 +23,9 @@ calcHSVHist::calcHSVHist(Mat _baseImg)
 	for ( int y=0; y<srcHSV.rows; ++y ) {
         for ( int x=0; x<srcHSV.cols; ++x ) {
             cv::Vec3b &v = srcHSV.at<cv::Vec3b>(y,x);
-			baseHist.increment(1,v[0]/10); // H
-            baseHist.increment(2,v[1]/10); // S 
-            baseHist.increment(3,v[2]/10); // V 
+			baseHist.increment(1,v[0]/divisor); // H
+            baseHist.increment(2,v[1]/divisor); // S 
+            baseHist.increment(3,v[2]/divisor); // V 
         }
     }
 	calcNormHist(baseHist, baseNormHist);
@@ -44,9 +48,9 @@ Histogram calcHSVHist::hsvHist(Mat src)
 	for ( int y=0; y<srcHSV.rows; ++y ) {
         for ( int x=0; x<srcHSV.cols; ++x ) {
             cv::Vec3b &v = srcHSV.at<cv::Vec3b>(y,x);
-			hsvHist.increment(1,v[0]/10); // H
-            hsvHist.increment(2,v[1]/10); // S 
-            hsvHist.increment(3,v[2]/10); // V 
+			hsvHist.increment(1,v[0]/divisor); // H
+            hsvHist.increment(2,v[1]/divisor); // S 
+            hsvHist.increment(3,v[2]/divisor); // V 
         }
     }
 	return hsvHist;
@@ -61,9 +65,9 @@ void calcHSVHist::hsvBaseHist(Mat _baseImg)
 	for ( int y=0; y<srcHSV.rows; ++y ) {
         for ( int x=0; x<srcHSV.cols; ++x ) {
             cv::Vec3b &v = srcHSV.at<cv::Vec3b>(y,x);
-			baseHist.increment(1,v[0]/10); // H
-            baseHist.increment(2,v[1]/10); // S 
-            baseHist.increment(3,v[2]/10); // V 
+			baseHist.increment(1,v[0]/divisor); // H
+            baseHist.increment(2,v[1]/divisor); // S 
+            baseHist.increment(3,v[2]/divisor); // V 
         }
     }
 	calcNormHist(baseHist, baseNormHist);
@@ -101,11 +105,11 @@ double  calcHSVHist::calcLikelihood(Histogram srcHist)//バタチャリア距離で尤度を
 	//like_hsv = std::sqrt(std::pow(like_h,like_h)+std::pow(like_s,like_s)+std::pow(like_v,like_v));
 	
 	//求めた類似度の平均をとる
-	//like_hsv = like_h + like_s + like_v / 3.0;
-	like_hv = (like_h + like_v)/2;
+	like_hsv = (like_h + like_s + like_v)/ 3.0;
+	//like_hv = (like_h + like_v)/2;
 	
-		//cout << like_h << "," << like_s << "," << like_v << endl;
-	return like_h;
+	//cout << like_h << "," << like_s << "," << like_v << endl;
+	return like_hsv;
 }
 
 

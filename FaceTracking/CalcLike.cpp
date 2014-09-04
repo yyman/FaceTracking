@@ -60,10 +60,11 @@ double CalcLike::calcLikelihood(Block bl){
 			//imshow("blave",bl.getAverageImg());
 		}
 	}
-	dist = sumDist / cellCnt;//距離の加重平均
+	dist = sumDist / cellCnt;//距離の平均
 	//cout << dist << endl; 
 	// 距離(dist)を平均、sigmaを分散として持つ、正規分布を尤度関数とする
-	result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-dist*dist/(2.0*sigma*sigma));
+	//result = 1.0 / (sqrt(2.0*CV_PI)*sigma) * expf(-dist*dist/(2.0*sigma*sigma));
+	result = 1/sumDist;
 	return result;
 }
 

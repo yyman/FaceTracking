@@ -164,8 +164,8 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 	src(roiRect).copyTo(blockImg);
 	//waitKey(33);
 
-	Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
-	result = cl.calcLikelihood(pBlock);
+	//Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
+	//result = cl.calcLikelihood(pBlock);
 
     //cout<<result<<endl;
 	if(_blockSize.width != 0 && _blockSize.height != 0){
@@ -176,14 +176,15 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 		int hh = (y+_blockSize.height/2 < img.size().height)?_blockSize.height:_blockSize.height-(y+_blockSize.height/2-img.size().height)-1;*/
 		//cout << hx << "," << hy << "," << hw << "," << hh << endl;
 		//faceImg = src(Rect(hx,hy,hw,hh));
-		//double dist = ch.calcLikelihood(ch.hsvHist(blockImg));
+		double dist = ch.calcLikelihood(ch.hsvHist(blockImg));
 		//Histogram normHist = Histogram(52,3);
 		//ch.calcNormHist(ch.hsvHist(blockImg), normHist);
 		//normHist.show("particleHist");
-		//result = dist;
+		result = dist;
 		//system("cls");
 		//cout<<result<<endl;
 	}
+		//cout<<result<<endl;
 	return result;
 }
 
@@ -211,8 +212,8 @@ void PFilter::resample()
 				particles[i]->set_y( pre_particles[j]->get_y() );
 				particles[i]->set_vx( pre_particles[j]->get_vx() );
 				particles[i]->set_vy( pre_particles[j]->get_vy() );
-				particles[i]->setWeight( pre_particles[j]->getWeight() );
-				//particles[i]->setWeight( 0.0 );
+				//particles[i]->setWeight( pre_particles[j]->getWeight() );
+				particles[i]->setWeight( 0.005 );
 				break;
 			}     
 		}
