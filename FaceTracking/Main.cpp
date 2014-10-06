@@ -3,6 +3,8 @@
 #include "PFilter.h"
 #include "FaceDetect.h"
 #include "CalcLike.h"
+#include "MShift.h"
+#include "OcvFD.h"
 
 int w = 640;//画面の幅
 int h = 480;//画面の高さ
@@ -139,6 +141,7 @@ int main(int argc, char** argv)
 	bool particleFlag = true;
 	bool measureFlag = true;
 	bool loopFlag = true;
+	Rect roiRect;
 	while(loopFlag){
 
 		//ブロック画像作成フェイズ
@@ -146,7 +149,7 @@ int main(int argc, char** argv)
 		mousePoint.y = 100;
 		while(blockImgDone){
 			cap >> img; // カメラから新しいフレームを取得
-			Rect roiRect = Rect(Point(mousePoint.x-blockSize.width/2, mousePoint.y-blockSize.height/2),
+			roiRect = Rect(Point(mousePoint.x-blockSize.width/2, mousePoint.y-blockSize.height/2),
 				Point(mousePoint.x+blockSize.width/2, mousePoint.y+blockSize.height/2));
 			img(roiRect).copyTo(blockImg);
 			namedWindow("img", CV_WINDOW_AUTOSIZE);
@@ -165,6 +168,8 @@ int main(int argc, char** argv)
 
 		//尤度計算テスト
 		CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
+		OcvFD ofd = OcvFD();
+		ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce");
 
 		cl.print();
 		imshow("average",cl.getAverageImg());
@@ -177,59 +182,71 @@ int main(int argc, char** argv)
 		Size faceSize = Size(100,100);
 		//ヒストグラム計算用クラス
 		calcHSVHist ch = calcHSVHist(blockImg);
-		
+
 		pf->setCL(cl);
 		pf->setCH(ch);
 
 		ch.baseNormHist.show("baseHist");
 
 		//ヒストグラムテスト用
-		Mat srctes = imread("C:\\Users\\ymaday\\Pictures\\tes.jpg");
-		calcHSVHist chtes = calcHSVHist(srctes);
-		chtes.baseNormHist.show("tes");
+		//Mat srctes = imread("C:\\Users\\ymaday\\Pictures\\tes.jpg");
+		//calcHSVHist chtes = calcHSVHist(srctes);
+		//chtes.baseNormHist.show("tes");
+		const int TRACKING_PARTICLE = 1;
+		const int TRACKING_MEANSHIFT = 2;
+		int trackingType = TRACKING_MEANSHIFT;
 
 		for(;;){
 			//img = cvQueryFrame (capture);
 			cap >> img; // カメラから新しいフレームを取得
 			img.copyTo(dst);
 
-			//顔検出
-			//if(!faceDetected){
-			//	faceDetected = fd.detect(img,ch);
-			//faceSize = fd.getFaceImage().size();
-			//}
-			//if(faceDetected){
-			pf->predict();  
+			switch(trackingType){
+			case TRACKING_PARTICLE://パーティクルフィルタの場合
+				//顔検出
+				//if(!faceDetected){
+				//	faceDetected = fd.detect(img,ch);
+				//faceSize = fd.getFaceImage().size();
+				//}
+				//if(faceDetected){
+				pf->predict();  
 
-			pf->weight(img, blockSize, img);
+				pf->weight(img, blockSize, img);
 
-			pf->measure(p);
+				pf->measure(p);
 
-			pf->resample();
+				pf->resample();
 
-			// パーティクルの表示
-			if(particleFlag){
-				for(int i=0; i<num; i++){
-					circle(dst, cvPoint(pf->particles[i]->get_x(), pf->particles[i]->get_y()), pf->particles[i]->getWeight()*num*10 , CV_RGB(255, 0, 0), CV_FILLED);
-					//rectangle(dst,Point( pf->particles[i]->get_x()-blockSize.width/2, pf->particles[i]->get_y()-blockSize.height/2),
+				// パーティクルの表示
+				if(particleFlag){
+					for(int i=0; i<num; i++){
+						circle(dst, cvPoint(pf->particles[i]->get_x(), pf->particles[i]->get_y()), pf->particles[i]->getWeight()*num*10 , CV_RGB(255, 0, 0), CV_FILLED);
+						//rectangle(dst,Point( pf->particles[i]->get_x()-blockSize.width/2, pf->particles[i]->get_y()-blockSize.height/2),
 						//Point( pf->particles[i]->get_x()+blockSize.width/2, pf->particles[i]->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
-					//cout << pf->particles[i]->getWeight() << endl;
+						//cout << pf->particles[i]->getWeight() << endl;
+					}
 				}
+				// 物体位置（パーティクルの重心）推定結果の表示
+				if(measureFlag){
+					//circle(dst, cvPoint( p->get_x(), p->get_y() ), 10, cl.getCenterColor(), CV_FILLED);
+					rectangle(dst,Point( p->get_x()-blockSize.width/2, p->get_y()-blockSize.height/2),
+						Point( p->get_x()+blockSize.width/2, p->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
+				}
+				//}
+
+
+				// ビデオに書き出し
+				//  cvWriteFrame (vw, dst);
+
+				//imshow("img", img);
+				imshow("dst", dst);
+				break;
+			case TRACKING_MEANSHIFT://meanshift追跡の場合
+				MShift ms = MShift();
+				dst = ms.run(img, roiRect);
+				imshow("dst", dst);
+				break;
 			}
-			// 物体位置（パーティクルの重心）推定結果の表示
-			if(measureFlag){
-				//circle(dst, cvPoint( p->get_x(), p->get_y() ), 10, cl.getCenterColor(), CV_FILLED);
-				rectangle(dst,Point( p->get_x()-blockSize.width/2, p->get_y()-blockSize.height/2),
-					Point( p->get_x()+blockSize.width/2, p->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
-			}
-			//}
-
-
-			// ビデオに書き出し
-			//  cvWriteFrame (vw, dst);
-
-			//imshow("img", img);
-			imshow("dst", dst);
 
 			key = cvWaitKey(33);
 			if( key == 27 ){
