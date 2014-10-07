@@ -30,8 +30,10 @@ void OcvFD::matching(
 	extractor->compute(img1, keypoint1, descriptor1);
 	extractor->compute(img2, keypoint2, descriptor2);
 	Mat keyout1,keyout2;
-	drawKeypoints(img1, keypoint1, keyout1);
-	drawKeypoints(img2, keypoint2, keyout2);
+	//drawKeypoints(img1, keypoint1, keyout1);
+	//drawKeypoints(img2, keypoint2, keyout2);
+	drawKeypoints(img1, keypoint1, keyout1, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	drawKeypoints(img2, keypoint2, keyout2, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 	
 	imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key1", keyout1);
 	imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key2", keyout2);
