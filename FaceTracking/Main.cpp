@@ -169,8 +169,8 @@ int main(int argc, char** argv)
 		//尤度計算テスト
 		CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
 		OcvFD ofd = OcvFD();
-		//ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce");
-		//ofd.matching(blockImg, img, "SURF", "SURF", "BruteForce");
+		ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce");
+		ofd.matching(blockImg, img, "SURF", "SURF", "BruteForce");
 		ofd.matching(img, img, "BRISK", "BRISK", "BruteForce");
 		ofd.matching(img, img, "ORB", "ORB", "BruteForce");
 
