@@ -29,6 +29,12 @@ void OcvFD::matching(
 	cv::Mat descriptor1, descriptor2;
 	extractor->compute(img1, keypoint1, descriptor1);
 	extractor->compute(img2, keypoint2, descriptor2);
+	Mat keyout1,keyout2;
+	drawKeypoints(img1, keypoint1, keyout1);
+	drawKeypoints(img2, keypoint2, keyout2);
+	
+	imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key1", keyout1);
+	imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key2", keyout2);
 
 	// マッチング
 	cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(descriptorMatcherName);
@@ -56,6 +62,6 @@ void OcvFD::matching(
 	// マッチング結果の表示
 	cv::Mat out;
 	cv::drawMatches(img1, keypoint1, img2, keypoint2, dmatch, out);
-	cv::imshow("matching", out);
+	cv::imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName, out);
 	while (cv::waitKey(1) == -1);
 }
