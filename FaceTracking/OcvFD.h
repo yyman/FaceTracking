@@ -20,6 +20,9 @@ public:
 	OcvFD();
 	~OcvFD();
 
+	string OcvFD::getNameOfType(int argType);
+	void OcvFD::printParams(const Algorithm* algo);
+
 	int get_x();
 	int get_y();
 	int get_vx();
