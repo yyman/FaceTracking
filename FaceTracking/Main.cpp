@@ -9,13 +9,14 @@
 int w = 640;//画面の幅
 int h = 480;//画面の高さ
 int num = 100;//パーティクルの数
-Size blockSize = Size(50,50);//粒子のブロックサイズ（決め打ち）
+Size blockSize = Size(100,100);//粒子のブロックサイズ（決め打ち）
 Size cellSize = Size(5,5);//粒子のブロックサイズ（決め打ち）
 Point mousePoint;
 bool blockImgDone = true;
 
 void onMouse (int event, int x, int y, int flags, void *param = NULL)
-{  char str[64];
+{  
+char str[64];
 static int line = 0;
 // マウスイベントを取得 
 switch (event) 
@@ -50,7 +51,8 @@ int main(int argc, char** argv)
 	PFilter* pf = new PFilter(num, upper, lower, noise);
 	// 位置推定の出力用
 	Particle *p = new Particle();
-
+	
+		cout<<"pf initialize"<<endl;
 
 	// OpenCV1を使ってUSBカメラからキャプチャする
 	/*CvCapture *capture = 0;
@@ -82,10 +84,10 @@ int main(int argc, char** argv)
 	string outputPath = "result/cap.avi";
 	double outputFPS = 30;
 	Size outputSize = Size(w, h);
-	VideoWriter writer(outputPath, CV_FOURCC_DEFAULT, outputFPS, outputSize);
+	//VideoWriter writer(outputPath, CV_FOURCC_DEFAULT, outputFPS, outputSize);
 	//Mat frame;
 	//writer << frame; // フレームを保存
-	if(!writer.isOpened()) return -1;
+	//if(!writer.isOpened()) return -1;
 	//writer.release();//すべてが終了したら解放
 
 	// 観測画像
@@ -154,11 +156,11 @@ int main(int argc, char** argv)
 			img(roiRect).copyTo(blockImg);
 			namedWindow("img", CV_WINDOW_AUTOSIZE);
 			setMouseCallback("img", onMouse, "img");
-			imshow("img", img);
+			//imshow("img", img);
 			imshow("blockIMG",blockImg);
 			img.copyTo(dst);
 			rectangle(dst,roiRect, CV_RGB(0, 0, 255), 2);
-			imshow("rect", dst);
+			imshow("img", dst);
 
 			key = cvWaitKey(33);
 			if( key == 27 ){
@@ -168,18 +170,18 @@ int main(int argc, char** argv)
 
 		//尤度計算テスト
 		CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
-		OcvFD ofd = OcvFD();
+		/*OcvFD ofd = OcvFD();
 		ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce",0);
 		ofd.matching(blockImg, img, "SURF", "SURF", "BruteForce");
 		ofd.matching(img, img, "BRISK", "BRISK", "BruteForce");
-		ofd.matching(img, img, "ORB", "ORB", "BruteForce");
+		ofd.matching(img, img, "ORB", "ORB", "BruteForce");*/
 
-		cl.print();
+		//cl.print();
 		imshow("average",cl.getAverageImg());
 		//imshow("blockImg",blockImg);
 
 		//顔検出用クラス
-		FD fd;
+		//FD fd;
 		//顔検出の成否
 		bool faceDetected = false;
 		Size faceSize = Size(100,100);
@@ -197,7 +199,7 @@ int main(int argc, char** argv)
 		//chtes.baseNormHist.show("tes");
 		const int TRACKING_PARTICLE = 1;
 		const int TRACKING_MEANSHIFT = 2;
-		int trackingType = TRACKING_MEANSHIFT;
+		int trackingType = TRACKING_PARTICLE;
 
 		for(;;){
 			//img = cvQueryFrame (capture);
@@ -223,7 +225,7 @@ int main(int argc, char** argv)
 				// パーティクルの表示
 				if(particleFlag){
 					for(int i=0; i<num; i++){
-						circle(dst, cvPoint(pf->particles[i]->get_x(), pf->particles[i]->get_y()), pf->particles[i]->getWeight()*num*10 , CV_RGB(255, 0, 0), CV_FILLED);
+						circle(dst, cvPoint(pf->particles[i]->get_x(), pf->particles[i]->get_y()), pf->particles[i]->getWeight()*num*5 , CV_RGB(255, 0, 0), CV_FILLED);
 						//rectangle(dst,Point( pf->particles[i]->get_x()-blockSize.width/2, pf->particles[i]->get_y()-blockSize.height/2),
 						//Point( pf->particles[i]->get_x()+blockSize.width/2, pf->particles[i]->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
 						//cout << pf->particles[i]->getWeight() << endl;

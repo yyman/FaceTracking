@@ -12,13 +12,13 @@ FD::FD()    //コンストラクタの定義
     if(!cascade.load(cascadeName)){
 		cout<<"検出器が読み込めませんでした"<<endl;
 	}
-    cout << "コンストラクタ呼び出し＼n";
+    cout << "コンストラクタ呼び出し\n";
 }
 
 FD::~FD()    //デストラクタの定義
 {
 	grayImage.release();
-    cout << "FDデストラクタ呼び出し＼n";
+    cout << "FDデストラクタ呼び出し\n";
 }
 
 bool FD::detect(Mat src, calcHSVHist ch)

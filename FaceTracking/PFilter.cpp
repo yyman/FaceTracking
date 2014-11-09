@@ -104,7 +104,8 @@ void PFilter::weight(Mat img, Size _blockSize, Mat baseImg)
 	for(int i=0; i<num; i++){
 		int x = pre_particles[i]->get_x();
 		int y = pre_particles[i]->get_y();
-		pre_particles[i]->setWeight( calcLikelihood(img, x, y, _blockSize) );
+		double pre_w = calcLikelihood(img, x, y, _blockSize);
+		pre_particles[i]->setWeight( pre_w * pre_w );
 	}
 
 	//³‹K‰»
@@ -212,8 +213,8 @@ void PFilter::resample()
 				particles[i]->set_y( pre_particles[j]->get_y() );
 				particles[i]->set_vx( pre_particles[j]->get_vx() );
 				particles[i]->set_vy( pre_particles[j]->get_vy() );
-				//particles[i]->setWeight( pre_particles[j]->getWeight() );
-				particles[i]->setWeight( 0.005 );
+				particles[i]->setWeight( pre_particles[j]->getWeight() );
+				//particles[i]->setWeight( 0.005 );
 				break;
 			}     
 		}

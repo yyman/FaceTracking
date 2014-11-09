@@ -1,6 +1,6 @@
 #include "calcHSVHist.h"
 
-const int divisor = 20;
+const int divisor = 15;
 
 calcHSVHist::calcHSVHist(void)
 {
@@ -11,8 +11,8 @@ calcHSVHist::calcHSVHist(Mat _baseImg)
 {
 	Mat srcHSV;
 	baseImg = _baseImg;
-	maxBin = 13;//256の20分の1の12.8の値を繰り上げ
-	//maxBin = 18;//256の15分の1の17.0~の値を繰り上げ
+	//maxBin = 13;//256の20分の1の12.8の値を繰り上げ
+	maxBin = 18;//256の15分の1の17.0~の値を繰り上げ
 	//maxBin = 26;//256の10分の1の25.6の値を繰り上げ
 	//maxBin = 52;//256の5分の1の51.2の値を繰り上げ
 	maxDim = 3;
@@ -79,7 +79,7 @@ double  calcHSVHist::calcLikelihood(Histogram srcHist)//バタチャリア距離で尤度を
 {
 	Histogram srcNormHist = Histogram(maxBin, maxDim);
 	calcNormHist(srcHist, srcNormHist);
-	double like_h = .0, like_s = .0, like_v = .0, like_hsv = .0, like_hv = .0;
+	double like_h = .0, like_s = .0, like_v = .0, like_hsv = .0, like_hv = .0, like_hs = .0;
 	//double a,b,ab,ab2,rab,rab2,rab3;
 
 	//各ビンのsqrt(base*hist)の合計して類似度を求める
@@ -100,16 +100,18 @@ double  calcHSVHist::calcLikelihood(Histogram srcHist)//バタチャリア距離で尤度を
 	//like_h = -logf(like_h);
 	//like_s = -logf(like_s);
 	//like_v = -logf(like_v);
+	//cout<<"like h:"<<like_h<<",s:"<<like_s<<endl;
 
 	//求めた類似度を二乗した和のルートを求める
 	//like_hsv = std::sqrt(std::pow(like_h,like_h)+std::pow(like_s,like_s)+std::pow(like_v,like_v));
 	
 	//求めた類似度の平均をとる
-	like_hsv = (like_h + like_s + like_v)/ 3.0;
+	//like_hsv = (like_h + like_s + like_v)/ 3.0;
 	//like_hv = (like_h + like_v)/2;
+	like_hs = (like_h + like_s/2) / 1.5;
 	
 	//cout << like_h << "," << like_s << "," << like_v << endl;
-	return like_hsv;
+	return like_hs;
 }
 
 
