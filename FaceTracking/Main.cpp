@@ -5,6 +5,7 @@
 #include "CalcLike.h"
 #include "MShift.h"
 #include "OcvFD.h"
+#include "Hough.h"
 
 int w = 640;//画面の幅
 int h = 480;//画面の高さ
@@ -193,6 +194,8 @@ int main(int argc, char** argv)
 
 		ch.baseNormHist.show("baseHist");
 
+		Hough hough = Hough();
+
 		//ヒストグラムテスト用
 		//Mat srctes = imread("C:\\Users\\ymaday\\Pictures\\tes.jpg");
 		//calcHSVHist chtes = calcHSVHist(srctes);
@@ -205,6 +208,9 @@ int main(int argc, char** argv)
 			//img = cvQueryFrame (capture);
 			cap >> img; // カメラから新しいフレームを取得
 			img.copyTo(dst);
+				
+			hough.calc(img);
+			hough.show();
 
 			switch(trackingType){
 			case TRACKING_PARTICLE://パーティクルフィルタの場合

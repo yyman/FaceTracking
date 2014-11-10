@@ -72,6 +72,7 @@
     <ClCompile Include="calcHSVHist.cpp" />
     <ClCompile Include="FaceDetect.cpp" />
     <ClCompile Include="Histogram.cpp" />
+    <ClCompile Include="Hough.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MShift.cpp" />
     <ClCompile Include="OcvFD.cpp" />
@@ -85,6 +86,7 @@
     <ClInclude Include="CalcLike.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="FaceDetect.h" />
+    <ClInclude Include="Hough.h" />
     <ClInclude Include="MShift.h" />
     <ClInclude Include="Histogram.h" />
     <ClInclude Include="OcvFD.h" />
