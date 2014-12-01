@@ -96,6 +96,10 @@
   <ItemGroup>
     <Xml Include="data\haarcascade_frontalface_alt.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\20141127_084359641_iOS.JPG" />
+    <Image Include="data\DSCN0532s.jpg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

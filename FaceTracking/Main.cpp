@@ -202,8 +202,19 @@ int main(int argc, char** argv)
 		//chtes.baseNormHist.show("tes");
 
 		//エッジ抽出用
-		Mat eSrc = imread("C:\\Users\\ymaday\\Pictures\\20141127_084359641_iOS.JPG");
-		imshow("eSrc", eSrc);
+		Mat eSrc = imread("data\\20141127_084359641_iOS.JPG", CV_LOAD_IMAGE_GRAYSCALE);
+		Mat resizeImg, binImg, cannyImg, bincannyImg;
+		int sub = eSrc.rows - eSrc.cols;
+		int eH = (sub > 0)? 480 : eSrc.rows * (double)(640.0 / eSrc.cols);
+		int eW = (sub > 0)? eSrc.cols * (double)(480.0 / eSrc.rows) : 640;
+		resize(eSrc, resizeImg, Size(eW, eH), 0, 0, INTER_AREA);
+		imshow("eSrc", resizeImg);
+		Canny(resizeImg, cannyImg, 50, 200, 3);
+		imshow("canny", cannyImg);
+		cv::threshold(resizeImg, binImg, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
+		imshow("bin_eSrc", binImg);
+		Canny(binImg, bincannyImg, 50, 200, 3);
+		imshow("bincanny", bincannyImg);
 
 		const int TRACKING_PARTICLE = 1;
 		const int TRACKING_MEANSHIFT = 2;

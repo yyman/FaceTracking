@@ -89,4 +89,12 @@
       <Filter>リソース ファイル</Filter>
     </Xml>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\DSCN0532s.jpg">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="data\20141127_084359641_iOS.JPG">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
