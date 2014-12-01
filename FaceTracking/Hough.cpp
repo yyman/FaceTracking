@@ -16,7 +16,7 @@ void Hough::calc(Mat src){
 	//Hough•ÏŠ·
 	vector<Vec2f> lines;
 	//’¼ü‚ÌŒŸo
-	HoughLines(GrayImg, lines, 1, CV_PI/180, 200, 0, 0);
+	HoughLines(GrayImg, lines, 1, CV_PI/180, 100, 0, 0);
 
 	//‚·‚×‚Ä‚Ìƒ‰ƒCƒ“‚ğo—Í‚·‚é
 	std::vector<Vec2f>::iterator it = lines.begin();

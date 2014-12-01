@@ -200,6 +200,11 @@ int main(int argc, char** argv)
 		//Mat srctes = imread("C:\\Users\\ymaday\\Pictures\\tes.jpg");
 		//calcHSVHist chtes = calcHSVHist(srctes);
 		//chtes.baseNormHist.show("tes");
+
+		//エッジ抽出用
+		Mat eSrc = imread("C:\\Users\\ymaday\\Pictures\\20141127_084359641_iOS.JPG");
+		imshow("eSrc", eSrc);
+
 		const int TRACKING_PARTICLE = 1;
 		const int TRACKING_MEANSHIFT = 2;
 		int trackingType = TRACKING_PARTICLE;
