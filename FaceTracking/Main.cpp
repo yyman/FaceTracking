@@ -209,6 +209,45 @@ int main(int argc, char** argv)
 		//calcHSVHist chtes = calcHSVHist(srctes);
 		//chtes.baseNormHist.show("tes");
 
+
+		Mat capImg, showImg;
+		bool caploop = true;
+		int i = 45;
+		// 矢印キー
+		const int CV_WAITKEY_CURSORKEY_TOP    = 2490368;
+		const int CV_WAITKEY_CURSORKEY_BOTTOM = 2621440;
+		const int CV_WAITKEY_CURSORKEY_RIGHT  = 2555904;
+		const int CV_WAITKEY_CURSORKEY_LEFT   = 2424832;
+		while(caploop){
+			cap >> capImg;
+			capImg.copyTo(showImg);
+			ostringstream oss;
+			oss << i << ".jpg";
+			cv::putText(showImg, oss.str(), cv::Point(50,50), cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0,0,200), 2, CV_AA);
+			imshow("capImg", showImg);
+			key = waitKey(33);
+			switch(key){
+				case 27: 
+					caploop = false;
+					break;
+				case 32:
+					imwrite("result\\model\\" + oss.str(), capImg);
+					break;
+				case 'w':
+					i += 3;
+					cout<<i<<endl;
+					break;
+				case 's':
+					i -= 3;
+					cout<<i<<endl;
+					break;
+				default:
+					//cout<<(char)key<<endl;
+					break;
+			}
+		}
+
+
 		//エッジ抽出用
 		Mat eSrc[5];
 		Mat resizeImg, binImg, sobelImg, laplacianImg, cannyImg, binsobelImg, binlaplacianImg, bincannyImg;
