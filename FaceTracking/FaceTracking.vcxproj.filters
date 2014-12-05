@@ -93,7 +93,19 @@
     <Image Include="data\DSCN0532s.jpg">
       <Filter>リソース ファイル</Filter>
     </Image>
-    <Image Include="data\20141127_084359641_iOS.JPG">
+    <Image Include="data\0.jpg">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="data\4.jpg">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="data\1.jpg">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="data\2.jpg">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="data\3.jpg">
       <Filter>リソース ファイル</Filter>
     </Image>
   </ItemGroup>

@@ -35,6 +35,14 @@ case CV_EVENT_LBUTTONUP:
 
 }
 
+//指定したサイズに内接した画像にリサイズ
+void inscribedResize(Mat src, Mat &dst, Size size, int interpolation = 1){	
+	int sub = src.rows - src.cols;
+	int eH = (sub > 0)? size.height : src.rows * (double)((double)size.width / src.cols);
+	int eW = (sub > 0)? src.cols * (double)((double)size.height / src.rows) : size.width;
+	resize(src, dst, Size(eW, eH), 0, 0, interpolation);
+}
+
 int main(int argc, char** argv)
 {
 	Mat blockImg;//追跡用のブロック画像
@@ -202,19 +210,34 @@ int main(int argc, char** argv)
 		//chtes.baseNormHist.show("tes");
 
 		//エッジ抽出用
-		Mat eSrc = imread("data\\20141127_084359641_iOS.JPG", CV_LOAD_IMAGE_GRAYSCALE);
-		Mat resizeImg, binImg, cannyImg, bincannyImg;
-		int sub = eSrc.rows - eSrc.cols;
-		int eH = (sub > 0)? 480 : eSrc.rows * (double)(640.0 / eSrc.cols);
-		int eW = (sub > 0)? eSrc.cols * (double)(480.0 / eSrc.rows) : 640;
-		resize(eSrc, resizeImg, Size(eW, eH), 0, 0, INTER_AREA);
-		imshow("eSrc", resizeImg);
-		Canny(resizeImg, cannyImg, 50, 200, 3);
-		imshow("canny", cannyImg);
-		cv::threshold(resizeImg, binImg, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
-		imshow("bin_eSrc", binImg);
-		Canny(binImg, bincannyImg, 50, 200, 3);
-		imshow("bincanny", bincannyImg);
+		Mat eSrc[5];
+		Mat resizeImg, binImg, sobelImg, laplacianImg, cannyImg, binsobelImg, binlaplacianImg, bincannyImg;
+
+		for(int i = 0; i < 5; i++){
+			ostringstream oss;
+			oss << i << ".jpg";
+			eSrc[i] = imread("data\\" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
+			//指定したサイズにリサイズ
+			inscribedResize(eSrc[i], resizeImg, Size(640, 480), INTER_AREA);
+			imwrite("result\\resizeImg" + oss.str(), resizeImg);
+			Sobel(resizeImg, sobelImg, CV_32F, 1, 1);
+			imwrite("result\\soble" + oss.str(), sobelImg);
+			Laplacian(resizeImg, laplacianImg, CV_32F, 3);
+			imwrite("result\\laplacian" + oss.str(), laplacianImg);
+			Canny(resizeImg, cannyImg, 50, 200, 3);
+			imwrite("result\\canny" + oss.str(), cannyImg);
+
+			//大津の二値化をしてから再度変換
+			cv::threshold(resizeImg, binImg, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
+			imwrite("result\\binary\\resizeImg" + oss.str(), binImg);
+			Sobel(binImg, binsobelImg, CV_32F, 1, 1);
+			imwrite("result\\binary\\soble" + oss.str(), binsobelImg);
+			Laplacian(binImg, binlaplacianImg, CV_32F, 3);
+			imwrite("result\\binary\\laplacian" + oss.str(), binlaplacianImg);
+			Canny(binImg, bincannyImg, 50, 200, 3);
+			imwrite("result\\binary\\canny" + oss.str(), bincannyImg);
+		}
+		//eSrc = imread("data\\DSCN0532s.jpg", CV_LOAD_IMAGE_GRAYSCALE);
 
 		const int TRACKING_PARTICLE = 1;
 		const int TRACKING_MEANSHIFT = 2;
