@@ -9,6 +9,8 @@
 #include <vector>
 
 #include <stdio.h>
+#include <shlwapi.h>
+#include <direct.h>
 #include <math.h>
 #include <opencv\cv.h>
 #include <opencv2\opencv.hpp>
@@ -49,6 +51,9 @@
 #pragma comment(lib,"opencv_video245.lib")
 #pragma comment(lib,"opencv_nonfree245.lib")
 #endif
+
+
+#pragma comment(lib, "shlwapi.lib")
 
 using namespace std;
 using namespace cv;

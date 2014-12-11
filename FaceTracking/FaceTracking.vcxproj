@@ -79,12 +79,14 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PFilter.cpp" />
     <ClCompile Include="CalcLike.cpp" />
+    <ClCompile Include="VgaCap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
     <ClInclude Include="calcHSVHist.h" />
     <ClInclude Include="CalcLike.h" />
     <ClInclude Include="Define.h" />
+    <ClInclude Include="EyeglassesModel.h" />
     <ClInclude Include="FaceDetect.h" />
     <ClInclude Include="Hough.h" />
     <ClInclude Include="MShift.h" />
@@ -92,6 +94,7 @@
     <ClInclude Include="OcvFD.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PFilter.h" />
+    <ClInclude Include="VgaCap.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="data\haarcascade_frontalface_alt.xml" />
