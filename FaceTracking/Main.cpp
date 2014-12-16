@@ -7,6 +7,7 @@
 #include "OcvFD.h"
 #include "Hough.h"
 #include "VgaCap.h"
+#include "TemplateMatching.h"
 
 int w = 640;//画面の幅
 int h = 480;//画面の高さ
@@ -212,6 +213,9 @@ int main(int argc, char** argv)
 
 		VgaCap vgaCap;
 		vgaCap.cap(cap);
+
+		TemplateMatching tempMatche;
+		tempMatche.match(cap);
 
 		//エッジ抽出用
 		Mat eSrc[181];

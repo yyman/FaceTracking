@@ -79,6 +79,7 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PFilter.cpp" />
     <ClCompile Include="CalcLike.cpp" />
+    <ClCompile Include="TemplateMatching.cpp" />
     <ClCompile Include="VgaCap.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +95,7 @@
     <ClInclude Include="OcvFD.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PFilter.h" />
+    <ClInclude Include="TemplateMatching.h" />
     <ClInclude Include="VgaCap.h" />
   </ItemGroup>
   <ItemGroup>
