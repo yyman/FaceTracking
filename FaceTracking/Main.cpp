@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 	cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, h);*/
 
 	//OpenCV2を使ってUSBカメラからキャプチャする
-	VideoCapture cap(0);
+	VideoCapture cap(1);
 	if(!cap.isOpened()){
 		cout<<"not found camera"<<endl;
 		return 0;
@@ -214,32 +214,33 @@ int main(int argc, char** argv)
 		vgaCap.cap(cap);
 
 		//エッジ抽出用
-		Mat eSrc[5];
+		Mat eSrc[181];
 		Mat resizeImg, binImg, sobelImg, laplacianImg, cannyImg, binsobelImg, binlaplacianImg, bincannyImg;
 
-		for(int i = 0; i < 5; i++){
+		for(int i = 0; i <= 180; i+=3){
 			ostringstream oss;
 			oss << i << ".jpg";
-			eSrc[i] = imread("data\\" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
+			eSrc[i] = imread("result\\model\\" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
 			//指定したサイズにリサイズ
 			inscribedResize(eSrc[i], resizeImg, Size(640, 480), INTER_AREA);
-			imwrite("result\\resizeImg" + oss.str(), resizeImg);
+			imwrite("result\\model\\test\\resizeImg" + oss.str(), resizeImg);
 			Sobel(resizeImg, sobelImg, CV_32F, 1, 1);
-			imwrite("result\\soble" + oss.str(), sobelImg);
+			imwrite("result\\model\\test\\soble" + oss.str(), sobelImg);
 			Laplacian(resizeImg, laplacianImg, CV_32F, 3);
-			imwrite("result\\laplacian" + oss.str(), laplacianImg);
+			imwrite("result\\model\\test\\laplacian" + oss.str(), laplacianImg);
 			Canny(resizeImg, cannyImg, 50, 200, 3);
-			imwrite("result\\canny" + oss.str(), cannyImg);
+			imwrite("result\\model\\test\\canny" + oss.str(), cannyImg);
 
 			//大津の二値化をしてから再度変換
-			cv::threshold(resizeImg, binImg, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
-			imwrite("result\\binary\\resizeImg" + oss.str(), binImg);
+			//cv::threshold(resizeImg, binImg, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
+			cv::threshold(resizeImg, binImg, 85, 255, CV_THRESH_BINARY);
+			imwrite("result\\model\\test\\binary\\resizeImg" + oss.str(), binImg);
 			Sobel(binImg, binsobelImg, CV_32F, 1, 1);
-			imwrite("result\\binary\\soble" + oss.str(), binsobelImg);
+			imwrite("result\\model\\test\\binary\\soble" + oss.str(), binsobelImg);
 			Laplacian(binImg, binlaplacianImg, CV_32F, 3);
-			imwrite("result\\binary\\laplacian" + oss.str(), binlaplacianImg);
+			imwrite("result\\model\\test\\binary\\laplacian" + oss.str(), binlaplacianImg);
 			Canny(binImg, bincannyImg, 50, 200, 3);
-			imwrite("result\\binary\\canny" + oss.str(), bincannyImg);
+			imwrite("result\\model\\test\\binary\\canny" + oss.str(), bincannyImg);
 		}
 		//eSrc = imread("data\\DSCN0532s.jpg", CV_LOAD_IMAGE_GRAYSCALE);
 

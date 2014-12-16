@@ -21,7 +21,7 @@ void VgaCap::cap( VideoCapture frame){
 	char path[] = "result\\model\\test";
 	if( PathFileExists( path ) && PathIsDirectory( path ) ){
 		// 指定されたパスにファイルが存在、かつディレクトリである
-		cout << "[" << path << "] is existed"
+		cout << "[" << path << "] is existed" << endl;
 	}else if( !PathFileExists( path ) ){
 		// 指定されたパスが存在しない
 		_mkdir(path);
@@ -35,7 +35,7 @@ void VgaCap::cap( VideoCapture frame){
 		oss << "\\" << i << ".jpg";
 		cv::putText(showImg, oss.str(), cv::Point(50,50), cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0,0,200), 2, CV_AA);
 		imshow("capImg", showImg);
-		key = waitKey(33);
+		key = waitKey(5);
 
 		switch(key){
 		case 27: 
