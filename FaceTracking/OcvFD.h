@@ -19,6 +19,8 @@ private:
 	const std::string& descriptorExtractorName;	// descriptorExtractorType
 	const std::string& descriptorMatcherName;	// descriptorMatcherType
 	cv::Ptr<cv::FeatureDetector> detector;
+	cv::Ptr<cv::DescriptorExtractor> extractor;
+	cv::Ptr<cv::DescriptorMatcher> matcher;
 
 public:
 	OcvFD(

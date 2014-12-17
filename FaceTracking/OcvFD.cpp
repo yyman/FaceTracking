@@ -23,6 +23,12 @@ OcvFD::OcvFD(
 	}
 	
 	printParams(detector);
+	
+	// 特徴記述
+	extractor = cv::DescriptorExtractor::create(descriptorExtractorName);
+	
+	// マッチング
+	matcher = cv::DescriptorMatcher::create(descriptorMatcherName);
 }
 
 OcvFD::~OcvFD(void){
@@ -34,12 +40,12 @@ void OcvFD::matching(
 	bool crossCheck)				// マッチング結果をクロスチェックするかどうか
 {
 
+	// 特徴点抽出
 	std::vector<cv::KeyPoint> keypoint1, keypoint2;
 	detector->detect(img1, keypoint1);
 	detector->detect(img2, keypoint2);
 
 	// 特徴記述
-	cv::Ptr<cv::DescriptorExtractor> extractor = cv::DescriptorExtractor::create(descriptorExtractorName);
 	Mat descriptor1(1, 1, CV_8UC1), descriptor2(1, 1, CV_8UC1);
 	extractor->compute(img1, keypoint1, descriptor1);
 	extractor->compute(img2, keypoint2, descriptor2);
@@ -62,7 +68,6 @@ void OcvFD::matching(
 	//imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key22", keyout22);
 
 	// マッチング
-	cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(descriptorMatcherName);
 	std::vector<cv::DMatch> dmatch;
 	if (crossCheck)
 	{
@@ -86,9 +91,9 @@ void OcvFD::matching(
 
 	// マッチング結果の表示
 	cv::Mat out;
-	cv::drawMatches(img1, keypoint1, img2, keypoint2, dmatch, out);
+	cv::drawMatches(img1, keypoint1, img2, keypoint2, dmatch, out, Scalar::all(-1), Scalar::all(-1), vector<char>(), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 	cv::imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName, out);
-	while (cv::waitKey(1) == -1);
+	//waitKey(0);
 }
 
 string OcvFD::getNameOfType(int argType)

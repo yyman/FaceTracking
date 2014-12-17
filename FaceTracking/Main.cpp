@@ -173,7 +173,7 @@ int main(int argc, char** argv)
 			rectangle(dst,roiRect, CV_RGB(0, 0, 255), 2);
 			imshow("img", dst);
 
-			key = cvWaitKey(33);
+			key = waitKey(33);
 			if( key == 27 ){
 				blockImgDone = false;
 			}
@@ -181,8 +181,12 @@ int main(int argc, char** argv)
 
 		//尤度計算テスト
 		CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
-		OcvFD ofd("SURF", "SURF", "BruteForce");
-		ofd.matching(blockImg, img);
+		OcvFD ofd = OcvFD("SURF", "SURF", "BruteForce");
+		while(true){
+			cap >> img;
+			ofd.matching(blockImg, img, false);
+			 waitKey(33);
+		}
 		//ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce",0);
 		//ofd.matching(img, img, "BRISK", "BRISK", "BruteForce");
 		//ofd.matching(img, img, "ORB", "ORB", "BruteForce");
