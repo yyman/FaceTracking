@@ -216,6 +216,7 @@ int main(int argc, char** argv)
 		//VgaCap vgaCap;
 		//vgaCap.cap(cap);
 
+		//テンプレートマッチング用
 		TemplateMatching tempMatche;
 		tempMatche.match(cap, sgtemp);
 
@@ -224,7 +225,7 @@ int main(int argc, char** argv)
 		bool fdloop = true;
 		while(fdloop){
 			cap >> img;
-			ofd.matching(sgtemp, img, false);
+			ofd.matching(sgtemp, img, true);
 			key = waitKey(33);
 			switch(key){
 			case 27:
