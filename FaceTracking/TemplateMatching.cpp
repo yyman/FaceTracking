@@ -9,11 +9,15 @@ TemplateMatching::~TemplateMatching(void){
 void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 
 	bool caploop = true;
-	Mat searchImg,showImg;
+	Mat src, searchImg,showImg, gImg;
 	unsigned char key = 0;
 
 	while(caploop){
-		frame >> searchImg;
+		frame >> src;
+		
+		//二値化
+		cvtColor(src, gImg, CV_RGB2GRAY);
+	    //cv::threshold(gImg, searchImg, 85, 255, CV_THRESH_BINARY);
 
 		// テンプレート画像
 		//cv::Mat tmp_img = cv::imread("result\\model\\90.jpg", 1);
@@ -21,6 +25,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 
 		cv::Mat result_img;
 		// テンプレートマッチング
+		cvtColor(gImg, searchImg, CV_GRAY2RGB);
 		cv::matchTemplate(searchImg, tmp_img, result_img, CV_TM_CCOEFF_NORMED);
 
 		// 最大のスコアの場所を探す

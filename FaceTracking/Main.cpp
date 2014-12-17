@@ -181,15 +181,6 @@ int main(int argc, char** argv)
 
 		//尤度計算テスト
 		CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
-		OcvFD ofd = OcvFD("SURF", "SURF", "BruteForce");
-		while(true){
-			cap >> img;
-			ofd.matching(blockImg, img, false);
-			 waitKey(33);
-		}
-		//ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce",0);
-		//ofd.matching(img, img, "BRISK", "BRISK", "BruteForce");
-		//ofd.matching(img, img, "ORB", "ORB", "BruteForce");
 
 		//cl.print();
 		imshow("average",cl.getAverageImg());
@@ -215,11 +206,35 @@ int main(int argc, char** argv)
 		//calcHSVHist chtes = calcHSVHist(srctes);
 		//chtes.baseNormHist.show("tes");
 
-		VgaCap vgaCap;
-		vgaCap.cap(cap);
+
+		
+		Mat gtemp = imread("result\\model\\test\\binary\\resizeImg90.jpg");
+		Mat sgtemp;
+		inscribedResize(gtemp, sgtemp, Size(320, 240), INTER_AREA);
+
+		//画像切り取り
+		//VgaCap vgaCap;
+		//vgaCap.cap(cap);
 
 		TemplateMatching tempMatche;
-		tempMatche.match(cap, blockImg);
+		tempMatche.match(cap, sgtemp);
+
+		//SIFTやSURFとかの特徴点検出
+		OcvFD ofd = OcvFD("SURF", "SURF", "BruteForce");
+		bool fdloop = true;
+		while(fdloop){
+			cap >> img;
+			ofd.matching(sgtemp, img, false);
+			key = waitKey(33);
+			switch(key){
+			case 27:
+				fdloop = false;
+				break;
+			}
+		}
+		//ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce",0);
+		//ofd.matching(img, img, "BRISK", "BRISK", "BruteForce");
+		//ofd.matching(img, img, "ORB", "ORB", "BruteForce");
 
 		//エッジ抽出用
 		Mat eSrc[181];
