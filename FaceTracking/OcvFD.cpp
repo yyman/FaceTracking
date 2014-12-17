@@ -1,6 +1,28 @@
 #include "OcvFD.h"
 
-OcvFD::OcvFD(){
+OcvFD::OcvFD(
+	const std::string& _featureDetectorName,		// detectorType
+	const std::string& _descriptorExtractorName,	// descriptorExtractorType
+	const std::string& _descriptorMatcherName	// descriptorMatcherType
+	):
+	featureDetectorName(_featureDetectorName),		// detectorType
+	descriptorExtractorName(_descriptorExtractorName),	// descriptorExtractorType
+	descriptorMatcherName(_descriptorMatcherName)	// descriptorMatcherType
+{
+	// SIFT・SURFモジュールの初期化
+	cv::initModule_nonfree();
+
+	// 特徴点抽出
+	detector = cv::FeatureDetector::create(featureDetectorName);
+
+	//surfの場合パラメータを変更
+	if(featureDetectorName == "SURF"){
+		double hTh = 500;
+		detector->set("hessianThreshold", hTh);
+		cout<< "featureDetectorName == SURF" << endl;
+	}
+	
+	printParams(detector);
 }
 
 OcvFD::~OcvFD(void){
@@ -9,18 +31,9 @@ OcvFD::~OcvFD(void){
 void OcvFD::matching(
 	Mat img1,			// 画像１
 	Mat img2,			// 画像２
-	const std::string& featureDetectorName,		// detectorType
-	const std::string& descriptorExtractorName,	// descriptorExtractorType
-	const std::string& descriptorMatcherName,	// descriptorMatcherType
 	bool crossCheck)				// マッチング結果をクロスチェックするかどうか
 {
 
-	// SIFT・SURFモジュールの初期化
-	cv::initModule_nonfree();
-
-	// 特徴点抽出
-	cv::Ptr<cv::FeatureDetector> detector = cv::FeatureDetector::create(featureDetectorName);
-	printParams(detector);
 	std::vector<cv::KeyPoint> keypoint1, keypoint2;
 	detector->detect(img1, keypoint1);
 	detector->detect(img2, keypoint2);
@@ -35,18 +48,18 @@ void OcvFD::matching(
 	//drawKeypoints(img1, keypoint1, keyout1);
 	//drawKeypoints(img2, keypoint2, keyout2);
 	try{
-	drawKeypoints(img1, keypoint1, keyout1, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	//drawKeypoints(img1, keypoint1, keyout1, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 	}
 	catch(Exception& e){
 		cout<<e.msg<<endl;
 		drawKeypoints(img1, keypoint1, keyout1);
 	}
-	drawKeypoints(img2, keypoint2, keyout21, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-	drawKeypoints(img2, keypoint2, keyout22);
+	//drawKeypoints(img2, keypoint2, keyout21, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	//drawKeypoints(img2, keypoint2, keyout22);
 
-	imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key1", keyout1);
-	imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key21", keyout21);
-	imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key22", keyout22);
+	//imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key1", keyout1);
+	//imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key21", keyout21);
+	//imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName+"key22", keyout22);
 
 	// マッチング
 	cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(descriptorMatcherName);

@@ -6,7 +6,7 @@ TemplateMatching::TemplateMatching(){
 TemplateMatching::~TemplateMatching(void){
 }
 
-void TemplateMatching::match( VideoCapture frame){
+void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 
 	bool caploop = true;
 	Mat searchImg,showImg;
@@ -16,7 +16,7 @@ void TemplateMatching::match( VideoCapture frame){
 		frame >> searchImg;
 
 		// テンプレート画像
-		cv::Mat tmp_img = cv::imread("result\\model\\90.jpg", 1);
+		//cv::Mat tmp_img = cv::imread("result\\model\\90.jpg", 1);
 		imshow("temp image", tmp_img);
 
 		cv::Mat result_img;

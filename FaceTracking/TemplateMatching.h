@@ -12,7 +12,7 @@ public:
 	TemplateMatching();
 	~TemplateMatching();
 
-	void match(VideoCapture frame);
+	void match(VideoCapture frame, Mat tmp_img);
 };
 
 #endif /*TMACHING_H_*/

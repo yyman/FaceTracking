@@ -181,11 +181,11 @@ int main(int argc, char** argv)
 
 		//尤度計算テスト
 		CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
-		/*OcvFD ofd = OcvFD();
-		ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce",0);
-		ofd.matching(blockImg, img, "SURF", "SURF", "BruteForce");
-		ofd.matching(img, img, "BRISK", "BRISK", "BruteForce");
-		ofd.matching(img, img, "ORB", "ORB", "BruteForce");*/
+		OcvFD ofd("SURF", "SURF", "BruteForce");
+		ofd.matching(blockImg, img);
+		//ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce",0);
+		//ofd.matching(img, img, "BRISK", "BRISK", "BruteForce");
+		//ofd.matching(img, img, "ORB", "ORB", "BruteForce");
 
 		//cl.print();
 		imshow("average",cl.getAverageImg());
@@ -215,13 +215,13 @@ int main(int argc, char** argv)
 		vgaCap.cap(cap);
 
 		TemplateMatching tempMatche;
-		tempMatche.match(cap);
+		tempMatche.match(cap, blockImg);
 
 		//エッジ抽出用
 		Mat eSrc[181];
 		Mat resizeImg, binImg, sobelImg, laplacianImg, cannyImg, binsobelImg, binlaplacianImg, bincannyImg;
 
-		for(int i = 0; i <= 180; i+=3){
+		for(int i = 200; i <= 180; i+=3){
 			ostringstream oss;
 			oss << i << ".jpg";
 			eSrc[i] = imread("result\\model\\" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);

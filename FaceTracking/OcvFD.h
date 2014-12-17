@@ -15,9 +15,17 @@ private:
 	int hsize;
 	int matchesNum;
 	Mat frame, hsv, hue, hist, mask, backproj;
+	const std::string& featureDetectorName;		// detectorType
+	const std::string& descriptorExtractorName;	// descriptorExtractorType
+	const std::string& descriptorMatcherName;	// descriptorMatcherType
+	cv::Ptr<cv::FeatureDetector> detector;
 
 public:
-	OcvFD();
+	OcvFD(
+		const std::string& _featureDetectorName,		// detectorType
+		const std::string& _descriptorExtractorName,	// descriptorExtractorType
+		const std::string& _descriptorMatcherName	// descriptorMatcherType
+		);
 	~OcvFD();
 
 	string OcvFD::getNameOfType(int argType);
@@ -31,9 +39,6 @@ public:
 	void matching(
 		Mat img1,			// 画像１
 		Mat img2,			// 画像２
-		const std::string& featureDetectorName,		// detectorType
-		const std::string& descriptorExtractorName,	// descriptorExtractorType
-		const std::string& descriptorMatcherName,	// descriptorMatcherType
 		bool crossCheck=true);				// マッチング結果をクロスチェックするかどうか
 	
 };
