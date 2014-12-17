@@ -206,37 +206,7 @@ int main(int argc, char** argv)
 		//calcHSVHist chtes = calcHSVHist(srctes);
 		//chtes.baseNormHist.show("tes");
 
-
 		
-		Mat gtemp = imread("result\\model\\test\\binary\\resizeImg90.jpg");
-		Mat sgtemp;
-		inscribedResize(gtemp, sgtemp, Size(320, 240), INTER_AREA);
-
-		//画像切り取り
-		//VgaCap vgaCap;
-		//vgaCap.cap(cap);
-
-		//テンプレートマッチング用
-		TemplateMatching tempMatche;
-		tempMatche.match(cap, sgtemp);
-
-		//SIFTやSURFとかの特徴点検出
-		OcvFD ofd = OcvFD("SURF", "SURF", "BruteForce");
-		bool fdloop = true;
-		while(fdloop){
-			cap >> img;
-			ofd.matching(sgtemp, img, true);
-			key = waitKey(33);
-			switch(key){
-			case 27:
-				fdloop = false;
-				break;
-			}
-		}
-		//ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce",0);
-		//ofd.matching(img, img, "BRISK", "BRISK", "BruteForce");
-		//ofd.matching(img, img, "ORB", "ORB", "BruteForce");
-
 		//エッジ抽出用
 		Mat eSrc[181];
 		Mat resizeImg, binImg, sobelImg, laplacianImg, cannyImg, binsobelImg, binlaplacianImg, bincannyImg;
@@ -267,6 +237,36 @@ int main(int argc, char** argv)
 			imwrite("result\\model\\test\\binary\\canny" + oss.str(), bincannyImg);
 		}
 		//eSrc = imread("data\\DSCN0532s.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+
+		
+		Mat gtemp = imread("result\\model\\test\\binary\\resizeImg90.jpg");
+		Mat sgtemp;
+		inscribedResize(gtemp, sgtemp, Size(320, 240), INTER_AREA);
+
+		//画像切り取り
+		//VgaCap vgaCap;
+		//vgaCap.cap(cap);
+
+		//テンプレートマッチング用
+		TemplateMatching tempMatche;
+		tempMatche.match(cap, sgtemp);
+
+		//SIFTやSURFとかの特徴点検出
+		OcvFD ofd = OcvFD("SURF", "SURF", "BruteForce");
+		bool fdloop = true;
+		while(fdloop){
+			cap >> img;
+			ofd.matching(sgtemp, img, true);
+			key = waitKey(33);
+			switch(key){
+			case 27:
+				fdloop = false;
+				break;
+			}
+		}
+		//ofd.matching(blockImg, img, "SIFT", "SIFT", "BruteForce",0);
+		//ofd.matching(img, img, "BRISK", "BRISK", "BruteForce");
+		//ofd.matching(img, img, "ORB", "ORB", "BruteForce");
 
 		const int TRACKING_PARTICLE = 1;
 		const int TRACKING_MEANSHIFT = 2;
