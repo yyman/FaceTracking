@@ -64,19 +64,21 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 		if(tempType == 1){
 			//グレースケール
 			cvtColor(src, gImg, CV_RGB2GRAY);
-			// テンプレートマッチング
 			cvtColor(gImg, searchImg, CV_GRAY2RGB);
+			// テンプレートマッチング
 			//cv::matchTemplate(searchImg, tmp_img, result_img, CV_TM_CCOEFF_NORMED);
 			cv::matchTemplate(searchImg, myTemplate, result_img, CV_TM_CCOEFF_NORMED);
 		}else if(tempType == 0){
-			searchImg = src.clone();
+			//グレースケール
+			cvtColor(src, gImg, CV_RGB2GRAY);
+			cvtColor(gImg, searchImg, CV_GRAY2RGB);
 			cv::matchTemplate(searchImg, myTemplate, result_img, CV_TM_CCOEFF_NORMED);
 		}else if(tempType == 2){
 			//二値化
 			cvtColor(src, gImg, CV_RGB2GRAY);
 			cv::threshold(gImg, searchImg, 85, 255, CV_THRESH_BINARY);
-			// テンプレートマッチング
 			cvtColor(searchImg, searchImg, CV_GRAY2RGB);
+			// テンプレートマッチング
 			//cv::matchTemplate(searchImg, tmp_img, result_img, CV_TM_CCOEFF_NORMED);
 			cv::matchTemplate(searchImg, myTemplate, result_img, CV_TM_CCOEFF_NORMED);
 		}
@@ -119,11 +121,15 @@ void TemplateMatching::tempChange(){
 		myTemplate = templateViewImg.clone();
 		imshow("templateViewImg", templateViewImg);
 		tempType = 0;
-	}else if(tempType == 0 || tempType == 2){
+	}else if(tempType == 0){
 		templateViewImg = imread("result\\model\\test\\binary\\resizeImg90.jpg");
 		myTemplate = templateViewImg.clone();
 		imshow("templateViewImg", templateViewImg);
-		if(tempType == 0) tempType = 2;
-		else if(tempType == 2) tempType = 1;
+		tempType = 2;
+	}else if(tempType == 2){
+		templateViewImg = imread("result\\model\\test\\binary\\resizeImg90.jpg");
+		myTemplate = templateViewImg.clone();
+		imshow("templateViewImg", templateViewImg);
+		tempType = 1;
 	}
 }

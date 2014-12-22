@@ -257,16 +257,16 @@ int main(int argc, char** argv)
 
 
 		Mat gtemp = imread("result\\model\\test\\binary\\resizeImg90.jpg");
+		//テンプレートマッチング用
+		TemplateMatching tempMatche;
+		tempMatche.match(cap, gtemp);
+
 		Mat sgtemp;
-		//inscribedResize(gtemp, sgtemp, Size(320, 240), INTER_AREA);
+		inscribedResize(gtemp, sgtemp, Size(320, 240), INTER_AREA);
 
 		//画像切り取り
 		//VgaCap vgaCap;
 		//vgaCap.cap(cap);
-
-		//テンプレートマッチング用
-		TemplateMatching tempMatche;
-		tempMatche.match(cap, gtemp);
 
 		//SIFTやSURFとかの特徴点検出
 		OcvFD ofd = OcvFD("SURF", "SURF", "BruteForce");
