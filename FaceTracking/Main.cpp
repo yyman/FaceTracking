@@ -241,7 +241,7 @@ int main(int argc, char** argv)
 		for(int i = 0;i<=180;i+=3){
 			ostringstream oss;
 			oss << i << ".jpg";
-			Mat glass = imread("result\\model\\test\\binary\\resizeImg" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
+			Mat glass = imread("result\\model\\test\\resizeImg" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
 			Rect roiG = Rect(50,150,glass.cols-100,150);
 			glasses[i] = glass(roiG);
 		}
