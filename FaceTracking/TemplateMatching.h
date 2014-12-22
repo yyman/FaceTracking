@@ -7,12 +7,13 @@
 class TemplateMatching
 {
 private:
-	
+	int tempType;
 public:
 	TemplateMatching();
 	~TemplateMatching();
 
 	void match(VideoCapture frame, Mat tmp_img);
+	void tempChange();
 };
 
 #endif /*TMACHING_H_*/

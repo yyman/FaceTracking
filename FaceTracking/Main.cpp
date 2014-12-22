@@ -17,24 +17,23 @@ Size cellSize = Size(5,5);//粒子のブロックサイズ（決め打ち）
 Point mousePoint;
 bool blockImgDone = true;
 
-void onMouse (int event, int x, int y, int flags, void *param = NULL)
+void onMouse1 (int event, int x, int y, int flags, void *param = NULL)
 {  
-char str[64];
-static int line = 0;
-// マウスイベントを取得 
-switch (event) 
-{
-case CV_EVENT_LBUTTONDOWN:
-	sprintf (str, "(%d,%d) %s", x, y, "LBUTTON_DOWN");
-	break;
+	char str[64];
+	static int line = 0;
+	// マウスイベントを取得 
+	switch (event) 
+	{
+	case CV_EVENT_LBUTTONDOWN:
+		sprintf (str, "(%d,%d) %s", x, y, "LBUTTON_DOWN");
+		break;
 
-case CV_EVENT_LBUTTONUP:
-	sprintf (str, "(%d,%d) %s", x, y, "LBUTTON_UP");
-	mousePoint.x=(x>blockSize.width)?((x<w-blockSize.width)?x:w-blockSize.width):blockSize.width;
-	mousePoint.y=(y>blockSize.height)?((y<h-blockSize.height)?y:h-blockSize.height):blockSize.height;
-	break;
-} 
-
+	case CV_EVENT_LBUTTONUP:
+		sprintf (str, "(%d,%d) %s", x, y, "LBUTTON_UP");
+		mousePoint.x=(x>blockSize.width)?((x<w-blockSize.width)?x:w-blockSize.width):blockSize.width;
+		mousePoint.y=(y>blockSize.height)?((y<h-blockSize.height)?y:h-blockSize.height):blockSize.height;
+		break;
+	} 
 }
 
 //指定したサイズに内接した画像にリサイズ
@@ -62,8 +61,8 @@ int main(int argc, char** argv)
 	PFilter* pf = new PFilter(num, upper, lower, noise);
 	// 位置推定の出力用
 	Particle *p = new Particle();
-	
-		cout<<"pf initialize"<<endl;
+
+	cout<<"pf initialize"<<endl;
 
 	// OpenCV1を使ってUSBカメラからキャプチャする
 	/*CvCapture *capture = 0;
@@ -166,7 +165,7 @@ int main(int argc, char** argv)
 				Point(mousePoint.x+blockSize.width/2, mousePoint.y+blockSize.height/2));
 			img(roiRect).copyTo(blockImg);
 			namedWindow("img", CV_WINDOW_AUTOSIZE);
-			setMouseCallback("img", onMouse, "img");
+			setMouseCallback("img", onMouse1, "img");
 			//imshow("img", img);
 			imshow("blockIMG",blockImg);
 			img.copyTo(dst);
@@ -206,7 +205,7 @@ int main(int argc, char** argv)
 		//calcHSVHist chtes = calcHSVHist(srctes);
 		//chtes.baseNormHist.show("tes");
 
-		
+
 		//エッジ抽出用
 		Mat eSrc[181];
 		Mat resizeImg, binImg, sobelImg, laplacianImg, cannyImg, binsobelImg, binlaplacianImg, bincannyImg;
@@ -236,12 +235,30 @@ int main(int argc, char** argv)
 			Canny(binImg, bincannyImg, 50, 200, 3);
 			imwrite("result\\model\\test\\binary\\canny" + oss.str(), bincannyImg);
 		}
+
+		bool showLoop = true;
+		Mat glasses[181];
+		for(int i = 0;i<=180;i+=3){
+			ostringstream oss;
+			oss << i << ".jpg";
+			Mat glass = imread("result\\model\\test\\binary\\resizeImg" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
+			Rect roiG = Rect(50,150,glass.cols-100,150);
+			glasses[i] = glass(roiG);
+		}
+		int count = 0;
+		while(showLoop){
+			imshow("glasses", glasses[count]);
+			count+=3;
+			if(count == 180) count = 0;
+			key = waitKey(33);
+			if(key == 32) showLoop = false;
+		}
 		//eSrc = imread("data\\DSCN0532s.jpg", CV_LOAD_IMAGE_GRAYSCALE);
 
-		
+
 		Mat gtemp = imread("result\\model\\test\\binary\\resizeImg90.jpg");
 		Mat sgtemp;
-		inscribedResize(gtemp, sgtemp, Size(320, 240), INTER_AREA);
+		//inscribedResize(gtemp, sgtemp, Size(320, 240), INTER_AREA);
 
 		//画像切り取り
 		//VgaCap vgaCap;
@@ -249,7 +266,7 @@ int main(int argc, char** argv)
 
 		//テンプレートマッチング用
 		TemplateMatching tempMatche;
-		tempMatche.match(cap, sgtemp);
+		tempMatche.match(cap, gtemp);
 
 		//SIFTやSURFとかの特徴点検出
 		OcvFD ofd = OcvFD("SURF", "SURF", "BruteForce");
@@ -276,7 +293,7 @@ int main(int argc, char** argv)
 			//img = cvQueryFrame (capture);
 			cap >> img; // カメラから新しいフレームを取得
 			img.copyTo(dst);
-				
+
 			hough.calc(img);
 			hough.show();
 
