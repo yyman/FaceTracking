@@ -4,7 +4,7 @@ int drag = 0;
 int select_flg = 0;
 Mat templateViewImg, myTemplate, roiImg;
 Point point1,point2;
-Rect tempRect;
+Rect tempRect[2];
 
 void onMouse2 (int event, int x, int y, int flags, void *param = NULL)
 {  
@@ -28,9 +28,9 @@ void onMouse2 (int event, int x, int y, int flags, void *param = NULL)
 	if (event == CV_EVENT_LBUTTONUP && drag)
 	{
 		point2 = Point(x, y);
-		tempRect = Rect(point1.x, point1.y, (x - point1.x == 0)?1:x - point1.x, (y - point1.y == 0)?1:y - point1.y);
+		tempRect[0] = Rect(point1.x, point1.y, (x - point1.x == 0)?1:x - point1.x, (y - point1.y == 0)?1:y - point1.y);
 		drag = 0;
-		roiImg = templateViewImg(tempRect);
+		roiImg = templateViewImg(tempRect[0]);
 		roiImg.copyTo(myTemplate);
 	}
 }
