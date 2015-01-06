@@ -14,6 +14,7 @@ public:
 
 	void match(VideoCapture frame, Mat tmp_img);
 	void tempChange();
+	void calcRect();
 };
 
 #endif /*TMACHING_H_*/

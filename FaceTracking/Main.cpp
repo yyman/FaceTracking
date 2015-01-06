@@ -236,7 +236,7 @@ int main(int argc, char** argv)
 			imwrite("result\\model\\test\\binary\\canny" + oss.str(), bincannyImg);
 		}
 
-		bool showLoop = true;
+		/*bool showLoop = true;
 		Mat glasses[181];
 		for(int i = 0;i<=180;i+=3){
 			ostringstream oss;
@@ -254,7 +254,7 @@ int main(int argc, char** argv)
 			if(key == 32) showLoop = false;
 		}
 		//eSrc = imread("data\\DSCN0532s.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-
+		*/
 
 		Mat gtemp = imread("result\\model\\test\\binary\\resizeImg90.jpg");
 		//テンプレートマッチング用
