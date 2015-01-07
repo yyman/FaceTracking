@@ -200,11 +200,9 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 		cv::rectangle(searchImg, roi_rect2, cv::Scalar(0, 255, 0), 3);
 
 
-		cv::namedWindow("search image", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
 		cv::namedWindow("result image", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
 		cv::namedWindow("result image2", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
 
-		cv::imshow("search image", searchImg);
 		cv::imshow("result image", result_img);
 		cv::imshow("result image2", result_img2);
 
@@ -213,38 +211,55 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 		Mat sum_result_img;
 	    Point maxp;
 		double max1 = 0;
-		if (mouseType == 1 && tempNum == 0){
-			calcRect();
-			Rect r = Rect(luP,rbP);
-			sum_result_img = Mat(cv::Size(result_img.cols - r.width, result_img.rows - r.height), CV_64F, cv::Scalar::all(0));
+		Vec2d vec = calcVec();
+		if (mouseType == 1 && tempNum == 0 && vec[0] != 0 && vec[1] != 0){
+			//calcRect();
+			//Rect r = Rect(luP,rbP);
+			int vx = vec[0];
+			int vy = vec[1];
+			sum_result_img = Mat(cv::Size(result_img.cols - abs(vx), result_img.rows - abs(vy)), CV_32F, cv::Scalar::all(0));
 			//cv::imshow("sum result image", sum_result_img);
 
-			//どっちのテンプレートが下かでズレが変わる
-			int yinit = 0;
-			int ybottom = result_img.rows - r.height -1;
-			if (rect1p.y > rect2p.y){
-				yinit = r.height;
-				ybottom = result_img.rows;
-			}
-
-			for (int y = yinit; y < ybottom; y++)
+			for (int y = 0; y < result_img.rows - abs(vy) - 1; ++y)
 			{
-				for (int x = 0; x < result_img.cols - r.width; x++)
+				for (int x = 0; x < result_img.cols - abs(vx); ++x)
 				{
-					double p, p2;
-					if (yinit > 0){
-						p = result_img.at<double>(y - r.height, x);
-						p2 = result_img2.at<double>(y, x);
+					float p, p2;
+					if (vy > 0)
+					{
+						if (vx > 0)
+						{
+							if (result_img.data == NULL){
+								cout << " null yade" << endl;
+							}
+							//cout << x << "," << y << ":" << vx << "," << vy << endl;
+							p = result_img.at<float>(y, x);
+							p2 = result_img2.at<float>(y + vy, x + vx);
+						}
+						else
+						{
+							p = result_img.at<float>(y, x - vx);
+							p2 = result_img2.at<float>(y + vy, x);
+						}
 					}
-					else{
-						p = result_img.at<double>(y, x);
-						p2 = result_img2.at<double>(y + r.height, x);
+					else
+					{
+						if (vx > 0)
+						{
+							p = result_img.at<float>(y - vy, x);
+							p2 = result_img2.at<float>(y, x + vx);
+						}
+						else
+						{
+							p = result_img.at<float>(y - vy, x - vx);
+							p2 = result_img2.at<float>(y, x);
+						}
 					}
 					
-					double ps;
+					float ps;
 
-					ps = (p + p2) / 2;
-					sum_result_img.at<double>(y, x) = ps;//はみ出すからfor文見直さないと
+					ps = p + p2;
+					sum_result_img.at<float>(y, x) = ps;//はみ出すからfor文見直さないと
 
 					//cout << p << "," << p2 << "," << ps << endl;
 
@@ -260,14 +275,44 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 						}
 					}
 				}
-				cout << y << ":" << r.height << ":" << result_img.rows << ":" << max1 << endl;
+				//cout << y << ":" << result_img.rows << ":" << max1 << endl;
 			}
 			cv::imshow("sum result image", sum_result_img);
-			cout << maxp.x << "," << maxp.y << ":" << max1 << endl;
-			r.x = maxp.x;
-			r.y = maxp.y;
+			int mpx, mpy;
+			if (vx > 0)
+			{
+				if ( vy > 0)
+				{
+					mpx = maxp.x;
+					mpy = maxp.y;
+				}
+				else
+				{
+					mpx = maxp.x;
+					mpy = maxp.y - vy;
+				}
+			}
+			if (vx < 0)
+			{
+				if ( vy > 0)
+				{
+					mpx = maxp.x - vx;
+					mpy = maxp.y;
+				}
+				else
+				{
+					mpx = maxp.x - vx;
+					mpy = maxp.y - vy;
+				}
+			}
+			Point mp(mpx, mpy);
+			cout << maxp.x << "," << maxp.y << ":" << mp.x << "," << mp.y << endl;
+			Rect r(mp.x, mp.y, vx + mouseSize.width, vy + mouseSize.height);
 			cv::rectangle(searchImg, r, cv::Scalar(255, 0, 0), 3);
 		}
+		
+		cv::namedWindow("search image", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
+		cv::imshow("search image", searchImg);
 
 		key = waitKey(5);
 
@@ -336,4 +381,12 @@ void TemplateMatching::calcRect(){
 			rbP = Point(rect1p.x, rect2p.y);
 		}
 	}
+}
+
+Vec2i TemplateMatching::calcVec(){
+	int x = rect2p.x - rect1p.x;
+	int y = rect2p.y - rect1p.y;
+	Vec2i v(x,y);
+	cout << v[0] << "," << v[1] << endl;
+	return v;
 }

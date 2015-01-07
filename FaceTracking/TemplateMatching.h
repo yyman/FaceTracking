@@ -15,6 +15,7 @@ public:
 	void match(VideoCapture frame, Mat tmp_img);
 	void tempChange();
 	void calcRect();
+	Vec2i calcVec();
 };
 
 #endif /*TMACHING_H_*/
