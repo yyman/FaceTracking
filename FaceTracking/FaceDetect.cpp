@@ -41,8 +41,9 @@ bool FD::detect(Mat src, calcHSVHist ch)
     );
     // ŒŸo‹éŒ`‚É‘Î‚µˆ—
     for (vector<Rect>::iterator iter = faces.begin(); iter != faces.end(); iter ++) {
-		faceImage = src(*iter);
-		imshow("face", faceImage);
+		faceImage.img = src(*iter);
+		faceImage.rect = *iter;
+		imshow("face", faceImage.img);
 		//ch.hsvBaseHist(faceImage);
 		//double l = ch.calcLikelihood(ch.hsvHist(faceImage));
 		//cout << l << endl;
@@ -55,6 +56,6 @@ bool FD::detect(Mat src, calcHSVHist ch)
 	return faceDetected;
 }
 
-Mat FD::getFaceImage(){
+FaceImage FD::getFaceImage(){
 	return faceImage;
 }

@@ -120,8 +120,33 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 	templateViewImg = tmp_img.clone();
 	tempType = 1;
 
+	bool faceDetected = false;
+	Size faceSize;
+	Mat faceImage;
+	Rect faceRect;
+
 	while(caploop){
 		frame >> src;
+
+		//顔検出
+		faceDetected = fd.detect(src,ch);
+		if(faceDetected){
+			faceRect = fd.getFaceImage().rect;
+
+			//faceRectを拡大
+			faceRect.x = (faceRect.x >= mouseSize.width) ? faceRect.x - mouseSize.width : 0;
+			faceRect.y = (faceRect.y >= mouseSize.height) ? faceRect.y - mouseSize.height : 0;
+			faceRect.width = (faceRect.x + faceRect.width + mouseSize.width * 2 < src.cols) ? faceRect.width + mouseSize.width * 2 : src.cols - faceRect.x;
+			faceRect.height = (faceRect.y + faceRect.height + mouseSize.height * 2 < src.rows) ? faceRect.height + mouseSize.height * 2 : src.rows - faceRect.y;
+			faceSize = faceImage.size();
+
+			//顔検出矩形からマウスサイズ拡大したROIを取り出す
+			faceImage = src(faceRect);
+
+			src = faceImage.clone();
+
+			faceDetected = false;
+		}
 
 		//////////////////////////////////////テンプレート１
 		cv::Mat result_img;
@@ -306,7 +331,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 				}
 			}
 			Point mp(mpx, mpy);
-			cout << maxp.x << "," << maxp.y << ":" << mp.x << "," << mp.y << endl;
+			cout << maxp.x << "," << maxp.y << ":" << mp.x << "," << mp.y << "), score=" << max1 << endl;
 			Rect r(mp.x, mp.y, vx + mouseSize.width, vy + mouseSize.height);
 			cv::rectangle(searchImg, r, cv::Scalar(255, 0, 0), 3);
 		}
@@ -326,7 +351,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 		case 'c':
 			mouseType = 1;
 			break;
-		case 'd':
+		case 'm':
 			mouseType = 0;
 			break;
 		case 'r':
@@ -334,6 +359,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 			break;
 		default:
 			//cout<<(char)key<<endl;
+			if (tempType == 1) tempChange(); 
 			break;
 		}
 	}

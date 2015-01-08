@@ -3,11 +3,15 @@
 
 #include <vector>
 #include "Define.h"
+#include "FaceDetect.h"
+#include "calcHSVHist.h"
 
 class TemplateMatching
 {
 private:
 	int tempType;
+	FD fd;
+	calcHSVHist ch;
 public:
 	TemplateMatching();
 	~TemplateMatching();

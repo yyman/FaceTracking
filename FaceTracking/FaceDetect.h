@@ -5,13 +5,19 @@
 #include "PFilter.h"
 
 
+
+typedef struct {
+	Mat img;
+	Rect rect;
+} FaceImage;
+
 class FD
 {
 private:
     char name[40];
     int age;
 	Mat grayImage;
-	Mat faceImage;
+	FaceImage faceImage;
 public:
     FD();    //コンストラクタ
     void setname(char* ss) { strcpy(name,ss); }
@@ -19,7 +25,7 @@ public:
     char* getname() { return name; }
     int getage() { return age; }
     bool detect(Mat src, calcHSVHist ch);
-	Mat getFaceImage();
+	FaceImage getFaceImage();
     ~FD();    //デストラクタ
 };
 
