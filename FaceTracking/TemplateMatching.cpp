@@ -11,6 +11,12 @@ Point luP, rbP;//テンプレートの左上と右下はどのポイントか
 int mouseType = 1;//0:ドラッグ,1:サイズ（mouseSize）固定
 Size mouseSize = Size(50, 50);
 
+Mat glasses[181];
+//テンプレート初期角度
+int temp_i = 90;
+
+bool saveFlg = false;
+
 void onMouse2 (int event, int x, int y, int flags, void *param = NULL)
 {  
 	switch (mouseType){
@@ -109,7 +115,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 	bool caploop = true;
 	Mat src, searchImg, showImg, gImg, searchImg2, showImg2, gImg2;
 	unsigned char key = 0;
-	
+
 	// テンプレート画像
 	//cv::Mat tmp_img = cv::imread("result\\model\\90.jpg", 1);
 	imshow("templateViewImg", tmp_img);
@@ -234,10 +240,15 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 
 		/////////////////二つのテンプレで最大のところを探す
 		Mat sum_result_img;
-	    Point maxp;
+		Point maxp;
 		double max1 = 0;
 		Vec2d vec = calcVec();
 		if (mouseType == 1 && tempNum == 0 && vec[0] != 0 && vec[1] != 0){
+			//まだセーブしてなかったら
+			if (!saveFlg)
+			{
+				saveFlg = tempPointSaveForCSV(rect1p, rect2p);
+			}
 			//calcRect();
 			//Rect r = Rect(luP,rbP);
 			int vx = vec[0];
@@ -280,7 +291,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 							p2 = result_img2.at<float>(y, x);
 						}
 					}
-					
+
 					float ps;
 
 					ps = p + p2;
@@ -335,7 +346,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 			Rect r(mp.x, mp.y, vx + mouseSize.width, vy + mouseSize.height);
 			cv::rectangle(searchImg, r, cv::Scalar(255, 0, 0), 3);
 		}
-		
+
 		cv::namedWindow("search image", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
 		cv::imshow("search image", searchImg);
 
@@ -347,6 +358,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 			break;
 		case 32:
 			tempChange();
+			tempNum = 1;
 			break;
 		case 'c':
 			mouseType = 1;
@@ -355,6 +367,14 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 			mouseType = 0;
 			break;
 		case 'r':
+			tempNum = 1;
+			break;
+		case 'd'://テンプレートの右回転
+			tempRotate('R');
+			tempNum = 1;
+			break;
+		case 'a'://テンプレートの左回転
+			tempRotate('L');
 			tempNum = 1;
 			break;
 		default:
@@ -367,19 +387,22 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 
 void TemplateMatching::tempChange(){
 	if (tempType == 1){
-		templateViewImg = imread("result\\model\\test\\resizeImg90.jpg");
+		templateURL = "result\\model\\test\\resizeImg90.jpg";
+		templateViewImg = imread(templateURL);
 		myTemplate = templateViewImg.clone();
 		imshow("templateViewImg", templateViewImg);
 		tempType = 0;
 	}
 	else if (tempType == 0){
-		templateViewImg = imread("result\\model\\test\\binary\\resizeImg90.jpg");
+		templateURL = "result\\model\\test\\binary\\resizeImg90.jpg";
+		templateViewImg = imread(templateURL);
 		myTemplate = templateViewImg.clone();
 		imshow("templateViewImg", templateViewImg);
 		tempType = 2;
 	}
 	else if (tempType == 2){
-		templateViewImg = imread("result\\model\\test\\binary\\resizeImg90.jpg");
+		templateURL = "result\\model\\test\\binary\\resizeImg90.jpg";
+		templateViewImg = imread(templateURL);
 		myTemplate = templateViewImg.clone();
 		imshow("templateViewImg", templateViewImg);
 		tempType = 1;
@@ -415,4 +438,42 @@ Vec2i TemplateMatching::calcVec(){
 	Vec2i v(x,y);
 	cout << v[0] << "," << v[1] << endl;
 	return v;
+}
+
+void TemplateMatching::tempRotate(uchar LR){
+	bool showLoop = true;
+	int i;
+	if(LR == 'L')
+	{
+		i = (temp_i != 180) ? temp_i + 3 : 0;
+	}
+	else
+	{
+		i = (temp_i != 0) ? temp_i - 3 : 0;
+	}
+	temp_i = i;
+	ostringstream oss;
+	oss << i << ".jpg";
+	templateURL = "result\\model\\test\\resizeImg" + oss.str();
+	templateViewImg = imread(templateURL);
+	myTemplate = templateViewImg.clone();
+	imshow("templateViewImg", templateViewImg);
+}
+
+bool TemplateMatching::tempPointSaveForCSV(Point pt1, Point pt2){
+	bool flg = false;
+	filename = "result\\model\\test\\data.csv";
+	ofstream ofs(filename, ios::app);
+	if ( ofs )
+	{
+		// current date/time based on current system
+		time_t now = time(0);
+
+		// convert now to string form
+		char* dt = ctime(&now);
+
+		ofs << temp_i << "," << templateURL << "," << pt1.x << "," << pt1.y << "," << pt2.x << "," << pt2.y << "," << dt << endl;
+		flg = true;
+	}
+	return flg;
 }

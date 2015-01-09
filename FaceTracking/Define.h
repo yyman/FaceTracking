@@ -12,6 +12,8 @@
 #include <shlwapi.h>
 #include <direct.h>
 #include <math.h>
+#include <fstream>
+#include <iostream>
 #include <opencv\cv.h>
 #include <opencv2\opencv.hpp>
 #include <opencv2\calib3d\calib3d.hpp>

@@ -12,6 +12,7 @@ private:
 	int tempType;
 	FD fd;
 	calcHSVHist ch;
+	string filename,templateURL;
 public:
 	TemplateMatching();
 	~TemplateMatching();
@@ -20,6 +21,8 @@ public:
 	void tempChange();
 	void calcRect();
 	Vec2i calcVec();
+	void tempRotate(uchar lr);
+	bool tempPointSaveForCSV(Point pt1, Point pt2);
 };
 
 #endif /*TMACHING_H_*/
