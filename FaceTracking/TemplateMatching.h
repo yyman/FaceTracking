@@ -24,6 +24,10 @@ private:
 	Mat templates[181];//配列を180まで持つため
 	bool tmFlg;
 	TempModel tm[181];
+	
+	//初期角度を90でテンプレート取得
+	int init_a;
+	int diff_a;
 public:
 	TemplateMatching();
 	~TemplateMatching();
