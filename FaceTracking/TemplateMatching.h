@@ -38,6 +38,8 @@ public:
 	void importCSV(string csv_path);
 	Mat matching(Mat src, Mat temp, int flg);
 	Mat sumMatchingResult(Mat result_img1, Mat result_img2, Vec2i v);
+	Rect maxRectSumResult(Mat sum_result, Vec2i vec, double &maxVal);
+	Rect maxRectResult(Mat result_img, double &max_val);
 };
 
 #endif /*TMACHING_H_*/

@@ -262,7 +262,7 @@ int main(int argc, char** argv)
 		tempMatch.match(cap, gtemp);
 		
 		Mat f;
-		string csv_path = "result\\model\\test\\data_LM_RS.csv";
+		string csv_path = "data\\data_LM_RS.csv";
 		Mat temp = imread("result\\model\\test\\resizeImg90.jpg");
 		while(true){
 			cap >> f;
