@@ -75,6 +75,8 @@ void onMouse2 (int event, int x, int y, int flags, void *param = NULL)
 				rectangle(img1, tempRect, CV_RGB(255, 0, 0), 3, 8, 0);
 				rectangle(img1, tempRect2, CV_RGB(0, 255, 0), 3, 8, 0);
 			}
+			
+			cv::putText(img1, to_string(temp_i), cv::Point(50,50), cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0,0,200), 2, CV_AA);
 			imshow("templateViewImg", img1);
 		}
 
@@ -105,6 +107,14 @@ void onMouse2 (int event, int x, int y, int flags, void *param = NULL)
 TemplateMatching::TemplateMatching(){
 	namedWindow("templateViewImg", CV_WINDOW_AUTOSIZE);
 	setMouseCallback("templateViewImg", onMouse2, "templateViewImg");
+
+	for(int i = 0; i <= 180; i+=3)
+	{	
+		ostringstream oss;
+		oss << i << ".jpg";
+		templateURL = "result\\model\\test\\resizeImg" + oss.str();
+		templates[i] = imread(templateURL);
+	}
 }
 
 TemplateMatching::~TemplateMatching(void){
@@ -135,7 +145,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 		frame >> src;
 
 		//顔検出
-		faceDetected = fd.detect(src,ch);
+		//faceDetected = fd.detect(src,ch);
 		if(faceDetected){
 			faceRect = fd.getFaceImage().rect;
 
@@ -155,7 +165,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 		}
 
 		//////////////////////////////////////テンプレート１
-		cv::Mat result_img;
+		Mat result_img;// = matching(src, myTemplate, CV_TM_CCOEFF_NORMED);
 		if (tempType == 1){
 			//グレースケール
 			cvtColor(src, gImg, CV_RGB2GRAY);
@@ -295,7 +305,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 					float ps;
 
 					ps = p + p2;
-					sum_result_img.at<float>(y, x) = ps;//はみ出すからfor文見直さないと
+					sum_result_img.at<float>(y, x) = ps;
 
 					//cout << p << "," << p2 << "," << ps << endl;
 
@@ -304,11 +314,6 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 					{
 						max1 = ps;
 						maxp = Point(x, y);
-						if (ps == 255)
-						{
-							//waitKey(0);
-							cout << x << "," << y << ":" << ps << ":" << max1 << endl;
-						}
 					}
 				}
 				//cout << y << ":" << result_img.rows << ":" << max1 << endl;
@@ -342,7 +347,9 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 				}
 			}
 			Point mp(mpx, mpy);
+#ifdef _DEBUG
 			cout << maxp.x << "," << maxp.y << ":" << mp.x << "," << mp.y << "), score=" << max1 << endl;
+#endif
 			Rect r(mp.x, mp.y, vx + mouseSize.width, vy + mouseSize.height);
 			cv::rectangle(searchImg, r, cv::Scalar(255, 0, 0), 3);
 		}
@@ -350,7 +357,12 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 		cv::namedWindow("search image", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
 		cv::imshow("search image", searchImg);
 
-		key = waitKey(5);
+		
+		string path = "result\\model\\test\\data.csv";
+		matchCSV(searchImg, path);
+		waitKey(0);
+
+		key = waitKey(1);
 
 		switch(key){
 		case 27: 
@@ -436,7 +448,7 @@ Vec2i TemplateMatching::calcVec(){
 	int x = rect2p.x - rect1p.x;
 	int y = rect2p.y - rect1p.y;
 	Vec2i v(x,y);
-	cout << v[0] << "," << v[1] << endl;
+	//cout << v[0] << "," << v[1] << endl;
 	return v;
 }
 
@@ -449,13 +461,10 @@ void TemplateMatching::tempRotate(uchar LR){
 	}
 	else
 	{
-		i = (temp_i != 0) ? temp_i - 3 : 0;
+		i = (temp_i != 0) ? temp_i - 3 : 180;
 	}
 	temp_i = i;
-	ostringstream oss;
-	oss << i << ".jpg";
-	templateURL = "result\\model\\test\\resizeImg" + oss.str();
-	templateViewImg = imread(templateURL);
+	templateViewImg = templates[i].clone();//とりあえずクローンしとく
 	myTemplate = templateViewImg.clone();
 	imshow("templateViewImg", templateViewImg);
 }
@@ -476,4 +485,69 @@ bool TemplateMatching::tempPointSaveForCSV(Point pt1, Point pt2){
 		flg = true;
 	}
 	return flg;
+}
+
+void TemplateMatching::matchCSV(Mat src, string csv_path){
+	importCSV(csv_path);
+}
+
+void TemplateMatching::importCSV(string csv_path){
+	ifstream ifs(csv_path);
+	string str,hoge,huga;
+
+	if (!ifs)
+	{
+		cout << "Error:Input data file not found" << endl;
+		return;
+	}
+
+	while(getline(ifs, str)){
+		string token;
+		stringstream ss, ss2;
+ 
+		istringstream stream(str);
+ 
+		while( getline(stream, token, ','))
+		{
+			ss << token;
+			ss >> hoge;
+		}
+		ss2 << token;
+		ss2 >> huga;
+		cout << hoge << huga << endl;
+	}
+	return;
+}
+
+Mat TemplateMatching::matching(Mat src, Mat temp, int flg){
+		Mat gImg,searchImg,result_img;
+		if (tempType == 1){
+			//グレースケール
+			cvtColor(src, gImg, CV_RGB2GRAY);
+			cvtColor(gImg, searchImg, CV_GRAY2RGB);
+		}
+		else if (tempType == 0){
+			//グレースケール
+			cvtColor(src, gImg, CV_RGB2GRAY);
+			cvtColor(gImg, searchImg, CV_GRAY2RGB);
+		}
+		else if (tempType == 2){
+			//二値化
+			cvtColor(src, gImg, CV_RGB2GRAY);
+			cv::threshold(gImg, searchImg, 85, 255, CV_THRESH_BINARY);
+			cvtColor(searchImg, searchImg, CV_GRAY2RGB);
+		}
+		cv::matchTemplate(searchImg, temp, result_img, flg);
+
+		// 最大のスコアの場所を探す
+		cv::Rect roi_rect(0, 0, temp.cols, temp.rows);
+		cv::Point max_pt;
+		double maxVal;
+		cv::minMaxLoc(result_img, NULL, &maxVal, NULL, &max_pt);
+		roi_rect.x = max_pt.x;
+		roi_rect.y = max_pt.y;
+#ifdef _DEBUG
+		std::cout << "(" << max_pt.x << ", " << max_pt.y << "), score=" << maxVal << std::endl;
+#endif
+		return result_img;
 }

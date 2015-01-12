@@ -13,6 +13,8 @@ private:
 	FD fd;
 	calcHSVHist ch;
 	string filename,templateURL;
+	
+	Mat templates[181];//”z—ñ‚ğ180‚Ü‚Å‚Â‚½‚ß
 public:
 	TemplateMatching();
 	~TemplateMatching();
@@ -23,6 +25,9 @@ public:
 	Vec2i calcVec();
 	void tempRotate(uchar lr);
 	bool tempPointSaveForCSV(Point pt1, Point pt2);
+	void matchCSV(Mat src, string csv_path);
+	void importCSV(string csv_path);
+	Mat matching(Mat src, Mat temp, int flg);
 };
 
 #endif /*TMACHING_H_*/
