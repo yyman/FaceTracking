@@ -369,6 +369,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 		switch(key){
 		case 27: 
 			caploop = false;
+			destroyAllWindows();
 			break;
 		case 32:
 			tempChange();
@@ -475,7 +476,7 @@ bool TemplateMatching::tempPointSaveForCSV(Point pt1, Point pt2){
 
 		// convert now to string form
 		char* dt = ctime(&now);
-
+		//templateURLは現状意味なし
 		ofs << temp_i << "," << templateURL << "," << pt1.x << "," << pt1.y << "," << pt2.x << "," << pt2.y << "," << dt;
 		flg = true;
 	}
@@ -485,6 +486,7 @@ bool TemplateMatching::tempPointSaveForCSV(Point pt1, Point pt2){
 void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 	//元ソースを変更しないように
 	Mat src = src_img.clone();
+	Mat dst0 = src_img.clone(), dst1 = src_img.clone(), dst2 = src_img.clone();
 	
 	//CSVを読み込んでいなかったら読み込む
 	if(!tmFlg)
@@ -494,39 +496,58 @@ void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 	}
 
 	//初期角度を90でテンプレート取得
-	int init_i = 90;
-	int diff_i = 15;
-
-	//テンプレート1
-	Rect tr1(tm[init_i].p1.x, tm[init_i].p1.y, mouseSize.width, mouseSize.height);
-	Mat template1 = templates[init_i](tr1);
-	Mat result_img1 = matching(src, template1, CV_TM_CCOEFF_NORMED);
-	double maxVal1;
-	Rect roi_rect1 = maxRectResult(result_img1, maxVal1);
-
-	//テンプレート2
-	Rect tr2(tm[init_i].p2.x, tm[init_i].p2.y, mouseSize.width, mouseSize.height);
-	Mat template2 = templates[init_i](tr2);
-	Mat result_img2 = matching(src, template2, CV_TM_CCOEFF_NORMED);
-	double maxVal2;
-	Rect roi_rect2 = maxRectResult(result_img2, maxVal2);
-
-	//ベクトル取得
-	Vec2i vec = calcVec(tm[init_i].p1, tm[init_i].p2);
-	//ずらして共通の結果画像を求める
-	Mat sum_result = sumMatchingResult(result_img1, result_img2, vec);
-
-	// 最大のスコアの場所を探す
-	double sum_maxVal;
-	Rect sum_roi_rect = maxRectSumResult(sum_result, vec, sum_maxVal);
+	int init_a = 90;
+	int diff_a = 15;
 	
-	// 探索結果の場所に矩形を描画
-	rectangle(src, roi_rect1, cv::Scalar(255, 0, 0), 3);
-	rectangle(src, roi_rect2, cv::Scalar(0, 255, 0), 3);
-	rectangle(src, sum_roi_rect, cv::Scalar(0, 0, 255), 3);
+	//各変数を３つずつの配列で作成
+	//init_i - diff_i から init_i + diff_i の３パターンで計算(配列は０，１，２順)
+	Rect tr1[3], roi_rect1[3], tr2[3], roi_rect2[3], sum_roi_rect[3];
+	Mat template1[3], template2[3], result_img1[3], result_img2[3], sum_result[3]; 
+	double maxVal1[3], maxVal2[3], sum_maxVal[3];
+	Vec2i vec[3];
 
-	imshow("matchCSV", src);
-	imshow("mC_sum_result", sum_result);
+	for (int a = init_a - diff_a, i = 0; a <= init_a + diff_a; a+=diff_a, i++){
+		//テンプレート1
+		tr1[i] = Rect(tm[a].p1.x, tm[a].p1.y, mouseSize.width, mouseSize.height);
+		template1[i] = templates[a](tr1[i]);
+		result_img1[i] = matching(src, template1[i], CV_TM_CCOEFF_NORMED);
+		roi_rect1[i] = maxRectResult(result_img1[i], maxVal1[i]);
+
+		//テンプレート2
+		tr2[i] = Rect(tm[a].p2.x, tm[a].p2.y, mouseSize.width, mouseSize.height);
+		template2[i] = templates[a](tr2[i]);
+		result_img2[i] = matching(src, template2[i], CV_TM_CCOEFF_NORMED);
+		roi_rect2[i] = maxRectResult(result_img2[i], maxVal2[i]);
+
+		//ベクトル取得
+		vec[i] = calcVec(tm[a].p1, tm[a].p2);
+		//ずらして共通の結果画像を求める
+		sum_result[i] = sumMatchingResult(result_img1[i], result_img2[i], vec[i]);
+
+		// 最大のスコアの場所を探す
+		sum_roi_rect[i] = maxRectSumResult(sum_result[i], vec[i], sum_maxVal[i]);
+	}
+
+	// 探索結果の場所に矩形を描画
+	//rectangle(dst0, roi_rect1[0], cv::Scalar(255, 0, 0), 3);
+	//rectangle(dst0, roi_rect2[0], cv::Scalar(0, 255, 0), 3);
+	//rectangle(dst0, sum_roi_rect[0], cv::Scalar(0, 0, 255), 3);
+	rectangle(dst1, roi_rect1[1], cv::Scalar(255, 0, 0), 3);
+	rectangle(dst1, roi_rect2[1], cv::Scalar(0, 255, 0), 3);
+	rectangle(dst1, sum_roi_rect[1], cv::Scalar(0, 0, 255), 3);
+	//rectangle(dst2, roi_rect1[2], cv::Scalar(255, 0, 0), 3);
+	//rectangle(dst2, roi_rect2[2], cv::Scalar(0, 255, 0), 3);
+	//rectangle(dst2, sum_roi_rect[2], cv::Scalar(0, 0, 255), 3);
+	
+	//imshow("matchCSV0", dst0);
+	imshow("matchCSV1", dst1);
+	//imshow("matchCSV2", dst2);
+	//imshow("mC_sum_result0", sum_result[0]);
+	imshow("mC_sum_result1", sum_result[1]);
+	//imshow("mC_sum_result2", sum_result[2]);
+
+	cout << sum_maxVal[0] << ", " << sum_maxVal[1] << ", " << sum_maxVal[2] << endl;
+	//waitKey(0);
 }
 
 void TemplateMatching::importCSV(string csv_path){

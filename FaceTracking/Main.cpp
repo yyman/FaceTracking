@@ -175,6 +175,7 @@ int main(int argc, char** argv)
 			key = waitKey(33);
 			if( key == 27 ){
 				blockImgDone = false;
+				destroyAllWindows();
 			}
 		}
 
@@ -182,7 +183,7 @@ int main(int argc, char** argv)
 		CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
 
 		//cl.print();
-		imshow("average",cl.getAverageImg());
+		//imshow("average",cl.getAverageImg());
 		//imshow("blockImg",blockImg);
 
 		//顔検出用クラス
@@ -196,7 +197,7 @@ int main(int argc, char** argv)
 		pf->setCL(cl);
 		pf->setCH(ch);
 
-		ch.baseNormHist.show("baseHist");
+		//ch.baseNormHist.show("baseHist");
 
 		Hough hough = Hough();
 
@@ -263,11 +264,11 @@ int main(int argc, char** argv)
 		
 		Mat f;
 		string csv_path = "data\\data_LM_RS.csv";
-		Mat temp = imread("result\\model\\test\\resizeImg90.jpg");
+		Mat temp = imread("result\\model\\test\\resizeImg93.jpg");
 		while(true){
 			cap >> f;
-			tempMatch.matchCSV(temp, csv_path);
-			waitKey(33);
+			tempMatch.matchCSV(f, csv_path);
+			waitKey(1);
 		}
 
 		Mat sgtemp;
