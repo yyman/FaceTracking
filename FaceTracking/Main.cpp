@@ -258,8 +258,17 @@ int main(int argc, char** argv)
 
 		Mat gtemp = imread("result\\model\\test\\binary\\resizeImg90.jpg");
 		//テンプレートマッチング用
-		TemplateMatching tempMatche;
-		tempMatche.match(cap, gtemp);
+		TemplateMatching tempMatch;
+		tempMatch.match(cap, gtemp);
+		
+		Mat f;
+		string csv_path = "result\\model\\test\\data_LM_RS.csv";
+		Mat temp = imread("result\\model\\test\\resizeImg90.jpg");
+		while(true){
+			cap >> f;
+			tempMatch.matchCSV(temp, csv_path);
+			waitKey(33);
+		}
 
 		Mat sgtemp;
 		inscribedResize(gtemp, sgtemp, Size(320, 240), INTER_AREA);

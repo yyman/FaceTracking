@@ -6,7 +6,6 @@ Mat templateViewImg, myTemplate, myTemplate2, roiImg;
 Point point1,point2,rect1p,rect2p;
 Rect tempRect,tempRect2;
 int tempNum = 1;//プラスマイナスで判断？
-Point luP, rbP;//テンプレートの左上と右下はどのポイントか
 
 int mouseType = 1;//0:ドラッグ,1:サイズ（mouseSize）固定
 Size mouseSize = Size(50, 50);
@@ -85,17 +84,20 @@ void onMouse2 (int event, int x, int y, int flags, void *param = NULL)
 			//テンプレート確定
 			if (tempNum > 0){
 				tempRect = Rect(point1.x, point1.y, mouseSize.width, mouseSize.height);
-				rect1p = Point(point1.x - mouseSize.width / 2, point1.y - mouseSize.height / 2);
+				//テンプレートの左上（基準点）を保存
+				rect1p = Point(point1.x, point1.y);
 				roiImg = templateViewImg(tempRect);
 				roiImg.copyTo(myTemplate);
 				tempNum = -1;
 			}
 			else if (tempNum < 0){
 				tempRect2 = Rect(point1.x, point1.y, mouseSize.width, mouseSize.height);
-				rect2p = Point(point1.x - mouseSize.width / 2, point1.y - mouseSize.height / 2);
+				//テンプレートの左上（基準点）を保存
+				rect2p = Point(point1.x, point1.y);
 				roiImg = templateViewImg(tempRect2);
 				roiImg.copyTo(myTemplate2);
 				tempNum = 0;
+				saveFlg = false;
 			}
 			drag = 0;
 		}
@@ -115,6 +117,8 @@ TemplateMatching::TemplateMatching(){
 		templateURL = "result\\model\\test\\resizeImg" + oss.str();
 		templates[i] = imread(templateURL);
 	}
+
+	tmFlg = false;
 }
 
 TemplateMatching::~TemplateMatching(void){
@@ -252,15 +256,13 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 		Mat sum_result_img;
 		Point maxp;
 		double max1 = 0;
-		Vec2d vec = calcVec();
+		Vec2d vec = calcVec(rect1p, rect2p);
 		if (mouseType == 1 && tempNum == 0 && vec[0] != 0 && vec[1] != 0){
 			//まだセーブしてなかったら
 			if (!saveFlg)
 			{
 				saveFlg = tempPointSaveForCSV(rect1p, rect2p);
 			}
-			//calcRect();
-			//Rect r = Rect(luP,rbP);
 			int vx = vec[0];
 			int vy = vec[1];
 			sum_result_img = Mat(cv::Size(result_img.cols - abs(vx), result_img.rows - abs(vy)), CV_32F, cv::Scalar::all(0));
@@ -358,9 +360,9 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 		cv::imshow("search image", searchImg);
 
 		
-		string path = "result\\model\\test\\data.csv";
-		matchCSV(searchImg, path);
-		waitKey(0);
+		//string path = "result\\model\\test\\data.csv";
+		//matchCSV(searchImg, path);
+		//waitKey(0);
 
 		key = waitKey(1);
 
@@ -421,32 +423,24 @@ void TemplateMatching::tempChange(){
 	}
 }
 
-void TemplateMatching::calcRect(){
-	if (rect1p.x <= rect2p.x){
-		if (rect1p.y <= rect2p.y){
-			luP = rect1p;
-			rbP = rect2p;
-		}
-		else{
-			luP = Point(rect1p.x, rect2p.y);
-			rbP = Point(rect2p.x, rect1p.y);
-		}
-	}
-	else{
-		if (rect1p.y > rect2p.y){
-			luP = rect2p;
-			rbP = rect1p;
-		}
-		else{
-			luP = Point(rect2p.x, rect1p.y);
-			rbP = Point(rect1p.x, rect2p.y);
-		}
-	}
+Rect TemplateMatching::calcRect(Mat result_img, Mat temp){
+	// 最大のスコアの場所を探す
+	cv::Rect roi_rect(0, 0, temp.cols, temp.rows);
+	cv::Point max_pt;
+	double maxVal;
+	cv::minMaxLoc(result_img, NULL, &maxVal, NULL, &max_pt);
+	roi_rect.x = max_pt.x;
+	roi_rect.y = max_pt.y;
+#ifdef _DEBUG
+	std::cout << "(" << max_pt.x << ", " << max_pt.y << "), score=" << maxVal << std::endl;
+#endif
+
+	return roi_rect;
 }
 
-Vec2i TemplateMatching::calcVec(){
-	int x = rect2p.x - rect1p.x;
-	int y = rect2p.y - rect1p.y;
+Vec2i TemplateMatching::calcVec(Point r1p, Point r2p){
+	int x = r2p.x - r1p.x;
+	int y = r2p.y - r1p.y;
 	Vec2i v(x,y);
 	//cout << v[0] << "," << v[1] << endl;
 	return v;
@@ -469,6 +463,7 @@ void TemplateMatching::tempRotate(uchar LR){
 	imshow("templateViewImg", templateViewImg);
 }
 
+//pt1とpt2はそのまま保存（Rect用にできるだけテンプレートの右上推奨）
 bool TemplateMatching::tempPointSaveForCSV(Point pt1, Point pt2){
 	bool flg = false;
 	filename = "result\\model\\test\\data.csv";
@@ -481,14 +476,94 @@ bool TemplateMatching::tempPointSaveForCSV(Point pt1, Point pt2){
 		// convert now to string form
 		char* dt = ctime(&now);
 
-		ofs << temp_i << "," << templateURL << "," << pt1.x << "," << pt1.y << "," << pt2.x << "," << pt2.y << "," << dt << endl;
+		ofs << temp_i << "," << templateURL << "," << pt1.x << "," << pt1.y << "," << pt2.x << "," << pt2.y << "," << dt;
 		flg = true;
 	}
 	return flg;
 }
 
-void TemplateMatching::matchCSV(Mat src, string csv_path){
-	importCSV(csv_path);
+void TemplateMatching::matchCSV(Mat src_img, string csv_path){
+	//元ソースを変更しないように
+	Mat src = src_img.clone();
+	
+	//CSVを読み込んでいなかったら読み込む
+	if(!tmFlg)
+	{
+		importCSV(csv_path);
+		tmFlg = true;
+	}
+
+	//初期角度を90でテンプレート取得
+	int init_i = 90;
+	int diff_i = 15;
+
+	//テンプレート1
+	Rect tr1(tm[init_i].p1.x, tm[init_i].p1.y, mouseSize.width, mouseSize.height);
+	Mat template1 = templates[init_i](tr1);
+	Mat result_img1 = matching(src, template1, CV_TM_CCOEFF_NORMED);
+	// 最大のスコアの場所を探す
+	cv::Rect roi_rect1(0, 0, template1.cols, template1.rows);
+	cv::Point max_pt1;
+	double maxVal1;
+	cv::minMaxLoc(result_img1, NULL, &maxVal1, NULL, &max_pt1);
+	roi_rect1.x = max_pt1.x;
+	roi_rect1.y = max_pt1.y;
+
+	//テンプレート2
+	Rect tr2(tm[init_i].p2.x, tm[init_i].p2.y, mouseSize.width, mouseSize.height);
+	Mat template2 = templates[init_i](tr2);
+	Mat result_img2 = matching(src, template2, CV_TM_CCOEFF_NORMED);
+
+	//ベクトル取得
+	Vec2i vec = calcVec(tm[init_i].p1, tm[init_i].p2);
+	int vx = vec[0];
+	int vy = vec[1];
+	//ずらして共通の結果画像を求める
+	Mat sum_result = sumMatchingResult(result_img1, result_img2, vec);
+
+	// 最大のスコアの場所を探す
+	cv::Rect roi_rect(0, 0, template1.cols + abs(vx), template1.rows + abs(vy));
+	cv::Point max_pt;
+	double maxVal;
+	cv::minMaxLoc(sum_result, NULL, &maxVal, NULL, &max_pt);
+
+	int mpx, mpy;
+	if (vx > 0)
+	{
+		if ( vy > 0)
+		{
+			mpx = max_pt.x;
+			mpy = max_pt.y;
+		}
+		else
+		{
+			mpx = max_pt.x;
+			mpy = max_pt.y - vy;
+		}
+	}
+	if (vx < 0)
+	{
+		if ( vy > 0)
+		{
+			mpx = max_pt.x - vx;
+			mpy = max_pt.y;
+		}
+		else
+		{
+			mpx = max_pt.x - vx;
+			mpy = max_pt.y - vy;
+		}
+	}
+	Point mp(mpx, mpy);
+	roi_rect.x = mp.x;
+	roi_rect.y = mp.y;
+	
+	// 探索結果の場所に矩形を描画
+	rectangle(src, roi_rect1, cv::Scalar(0, 255, 0), 3);
+	rectangle(src, roi_rect, cv::Scalar(0, 0, 255), 3);
+
+	imshow("matchCSV", src);
+	imshow("mC_sum_result", sum_result);
 }
 
 void TemplateMatching::importCSV(string csv_path){
@@ -506,15 +581,34 @@ void TemplateMatching::importCSV(string csv_path){
 		stringstream ss, ss2;
  
 		istringstream stream(str);
- 
-		while( getline(stream, token, ','))
+		int i;
+		if(getline(stream, token, ','))
 		{
-			ss << token;
-			ss >> hoge;
+			i = stoi(token);
+			tm[i].index = i;
 		}
-		ss2 << token;
-		ss2 >> huga;
-		cout << hoge << huga << endl;
+		if(getline(stream, token, ','))
+		{
+			tm[i].path = token;
+		}
+		if(getline(stream, token, ','))
+		{
+			tm[i].p1.x = stoi(token);
+		}
+		if(getline(stream, token, ','))
+		{
+			tm[i].p1.y = stoi(token);
+		}
+		if(getline(stream, token, ','))
+		{
+			tm[i].p2.x = stoi(token);
+		}
+		if(getline(stream, token, ','))
+		{
+			tm[i].p2.y = stoi(token);
+		}
+
+		cout << "index : " << tm[i].index << ", path : " << tm[i].path << endl;
 	}
 	return;
 }
@@ -539,15 +633,62 @@ Mat TemplateMatching::matching(Mat src, Mat temp, int flg){
 		}
 		cv::matchTemplate(searchImg, temp, result_img, flg);
 
-		// 最大のスコアの場所を探す
-		cv::Rect roi_rect(0, 0, temp.cols, temp.rows);
-		cv::Point max_pt;
-		double maxVal;
-		cv::minMaxLoc(result_img, NULL, &maxVal, NULL, &max_pt);
-		roi_rect.x = max_pt.x;
-		roi_rect.y = max_pt.y;
-#ifdef _DEBUG
-		std::cout << "(" << max_pt.x << ", " << max_pt.y << "), score=" << maxVal << std::endl;
-#endif
 		return result_img;
+}
+
+/////////////////二つのテンプレで最大のところを探す
+Mat TemplateMatching::sumMatchingResult(Mat result_img1, Mat result_img2, Vec2i vec){
+	Mat sum_result_img;
+	Point maxp;
+	double max1 = 0;
+	int vx = vec[0];
+	int vy = vec[1];
+	sum_result_img = Mat(cv::Size(result_img1.cols - abs(vx), result_img1.rows - abs(vy)), CV_32F, cv::Scalar::all(0));
+
+	for (int y = 0; y < result_img1.rows - abs(vy) - 1; ++y)
+	{
+		for (int x = 0; x < result_img1.cols - abs(vx); ++x)
+		{
+			float p, p2;
+			if (vy > 0)
+			{
+				if (vx > 0)
+				{
+					if (result_img1.data == NULL){
+						cout << " null yade" << endl;
+					}
+					//cout << x << "," << y << ":" << vx << "," << vy << endl;
+					p = result_img1.at<float>(y, x);
+					p2 = result_img2.at<float>(y + vy, x + vx);
+				}
+				else
+				{
+					p = result_img1.at<float>(y, x - vx);
+					p2 = result_img2.at<float>(y + vy, x);
+				}
+			}
+			else
+			{
+				if (vx > 0)
+				{
+					p = result_img1.at<float>(y - vy, x);
+					p2 = result_img2.at<float>(y, x + vx);
+				}
+				else
+				{
+					p = result_img1.at<float>(y - vy, x - vx);
+					p2 = result_img2.at<float>(y, x);
+				}
+			}
+
+			float ps;
+
+			ps = p + p2;
+			sum_result_img.at<float>(y, x) = ps;
+
+			//cout << p << "," << p2 << "," << ps << endl;
+		}
+		//cout << y << ":" << result_img.rows << ":" << max1 << endl;
+	}
+	return sum_result_img;
 }
