@@ -267,7 +267,7 @@ int main(int argc, char** argv)
 		Mat temp = imread("result\\model\\test\\resizeImg90.jpg");
 		while(true){
 			cap >> f;
-			tempMatch.matchCSV(temp, csv_path);
+			tempMatch.matchCSV(f, csv_path);
 			waitKey(1);
 		}
 

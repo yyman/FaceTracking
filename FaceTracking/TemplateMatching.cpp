@@ -499,14 +499,17 @@ void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 		tmFlg = true;
 	}
 	
+	const int ai = 61;
+
 	//各変数を３つずつの配列で作成（コンストラクタで初期角度を指定）
 	//init_i - diff_i から init_i + diff_i の３パターンで計算(配列は０，１，２順)
-	Rect tr1[3], roi_rect1[3], tr2[3], roi_rect2[3], sum_roi_rect[3];
-	Mat template1[3], template2[3], result_img1[3], result_img2[3], sum_result[3]; 
-	double maxVal1[3], maxVal2[3], sum_maxVal[3];
-	Vec2i vec[3];
-
-	for (int a = init_a - diff_a, i = 0; a <= init_a + diff_a; a+=diff_a, i++){
+	Rect tr1[ai], roi_rect1[ai], tr2[ai], roi_rect2[ai], sum_roi_rect[ai];
+	Mat template1[ai], template2[ai], result_img1[ai], result_img2[ai], sum_result[ai]; 
+	double maxVal1[ai], maxVal2[ai], sum_maxVal[ai];
+	Vec2i vec[ai];
+	
+	//for (int a = init_a - diff_a, i = 0; a <= init_a + diff_a; a+=diff_a, i++){
+	for (int a = 0, i = 0; a <= 180; a+=3, i++){
 		//テンプレート1
 		tr1[i] = Rect(tm[a].p1.x, tm[a].p1.y, mouseSize.width, mouseSize.height);
 		template1[i] = templates[a](tr1[i]);
@@ -539,7 +542,7 @@ void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 	}*/
 
 	// 探索結果の場所に矩形を描画
-	rectangle(dst0, roi_rect1[0], cv::Scalar(255, 0, 0), 3);
+	/*rectangle(dst0, roi_rect1[0], cv::Scalar(255, 0, 0), 3);
 	rectangle(dst0, roi_rect2[0], cv::Scalar(0, 255, 0), 3);
 	rectangle(dst0, sum_roi_rect[0], cv::Scalar(0, 0, 255), 3);
 	rectangle(dst1, roi_rect1[1], cv::Scalar(255, 0, 0), 3);
@@ -554,10 +557,30 @@ void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 	imshow("matchCSV2", dst2);
 	imshow("mC_sum_result0", sum_result[0]);
 	imshow("mC_sum_result1", sum_result[1]);
-	imshow("mC_sum_result2", sum_result[2]);
+	imshow("mC_sum_result2", sum_result[2]);*/
 
-	cout << init_a << ", " << sum_maxVal[0] << ", " << sum_maxVal[1] << ", " << sum_maxVal[2] << endl;
-	waitKey(0);
+	//cout << init_a << ", " << sum_maxVal[0] << ", " << sum_maxVal[1] << ", " << sum_maxVal[2] << endl;
+	int max_i = 0;
+	double max_v = 0;
+	for(int i = 0; i < ai; i++){
+		//cout << i << ":" << sum_maxVal[i] << endl; 
+		if(max_v < sum_maxVal[i]){
+			max_i = i;
+			max_v = sum_maxVal[i];
+		}
+	}
+
+	
+	cout << max_i << ":" << max_v << endl; 
+
+	rectangle(dst0, roi_rect1[max_i], cv::Scalar(255, 0, 0), 3);
+	rectangle(dst0, roi_rect2[max_i], cv::Scalar(0, 255, 0), 3);
+	rectangle(dst0, sum_roi_rect[max_i], cv::Scalar(0, 0, 255), 3);
+	putText(dst0, to_string(max_i), cv::Point(50,50), cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0,0,200), 2, CV_AA);
+	imshow("matchCSV0", dst0);
+	imshow("mC_sum_result0", sum_result[max_i]);
+
+	//waitKey(0);
 }
 
 void TemplateMatching::importCSV(string csv_path){
