@@ -264,7 +264,7 @@ int main(int argc, char** argv)
 		
 		Mat f;
 		string csv_path = "data\\data_LM_RS.csv";
-		Mat temp = imread("result\\model\\test\\resizeImg96.jpg");
+		Mat temp = imread("result\\model\\test\\resizeImg90.jpg");
 		while(true){
 			cap >> f;
 			tempMatch.matchCSV(temp, csv_path);

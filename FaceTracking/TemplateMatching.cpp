@@ -121,7 +121,7 @@ TemplateMatching::TemplateMatching(){
 	tmFlg = false;
 	
 	//初期角度を90でテンプレート取得
-	init_a = 96;
+	init_a = 90;
 	diff_a = 15;
 }
 
@@ -529,14 +529,14 @@ void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 	}
 
 	//角度の変更（１．２以上だったら左右大きい方へ３度変える）
-	if (sum_maxVal[1] < 1.6){
+	/*if (sum_maxVal[1] < 1.6 || sum_maxVal[0] > 1.2 || sum_maxVal[2] > 1.2){
 		if(sum_maxVal[0] < sum_maxVal[2]){
 			init_a+=3;
 		}
 		else if(sum_maxVal[0] > sum_maxVal[2]){
 			init_a-=3;
 		}
-	}
+	}*/
 
 	// 探索結果の場所に矩形を描画
 	rectangle(dst0, roi_rect1[0], cv::Scalar(255, 0, 0), 3);
@@ -602,7 +602,7 @@ void TemplateMatching::importCSV(string csv_path){
 			tm[i].p2.y = stoi(token);
 		}
 
-		cout << "index : " << tm[i].index << ", path : " << tm[i].path << endl;
+		cout << "index : " << tm[i].index << ", p1: " << tm[i].p1.x << "," << tm[i].p1.y << ", p2: " << tm[i].p2.x << "," << tm[i].p2.y << endl;
 	}
 	return;
 }
