@@ -56,7 +56,6 @@
 #pragma comment(lib,"opencv_nonfree245.lib")
 #endif
 
-
 #pragma comment(lib, "shlwapi.lib")
 
 using namespace std;
