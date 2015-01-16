@@ -12,7 +12,7 @@
 int w = 640;//画面の幅
 int h = 480;//画面の高さ
 int num = 100;//パーティクルの数
-Size blockSize = Size(100,100);//粒子のブロックサイズ（決め打ち）
+Size blockSize = Size(30,30);//粒子のブロックサイズ（決め打ち）
 Size cellSize = Size(5,5);//粒子のブロックサイズ（決め打ち）
 Point mousePoint;
 bool blockImgDone = true;
@@ -159,14 +159,16 @@ int main(int argc, char** argv)
 		//ブロック画像作成フェイズ
 		mousePoint.x = 100;
 		mousePoint.y = 100;
+		Mat templ = imread("result\\model\\test2\\resizeImg90.jpg");
 		while(blockImgDone){
 			cap >> img; // カメラから新しいフレームを取得
+			img = templ;
 			roiRect = Rect(Point(mousePoint.x-blockSize.width/2, mousePoint.y-blockSize.height/2),
 				Point(mousePoint.x+blockSize.width/2, mousePoint.y+blockSize.height/2));
 			img(roiRect).copyTo(blockImg);
 			namedWindow("img", CV_WINDOW_AUTOSIZE);
 			setMouseCallback("img", onMouse1, "img");
-			//imshow("img", img);
+			imshow("img", img);
 			imshow("blockIMG",blockImg);
 			img.copyTo(dst);
 			rectangle(dst,roiRect, CV_RGB(0, 0, 255), 2);
@@ -182,9 +184,9 @@ int main(int argc, char** argv)
 		//尤度計算テスト
 		CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
 
-		//cl.print();
-		//imshow("average",cl.getAverageImg());
-		//imshow("blockImg",blockImg);
+		cl.print();
+		imshow("average",cl.getAverageImg());
+		imshow("blockImg",blockImg);
 
 		//顔検出用クラス
 		//FD fd;
@@ -211,30 +213,32 @@ int main(int argc, char** argv)
 		Mat eSrc[181];
 		Mat resizeImg, binImg, sobelImg, laplacianImg, cannyImg, binsobelImg, binlaplacianImg, bincannyImg;
 
-		for(int i = 200; i <= 180; i+=3){
+		for(int i = 145; i <= 135; i+=3){
 			ostringstream oss;
 			oss << i << ".jpg";
-			eSrc[i] = imread("result\\model\\" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
+			eSrc[i] = imread("result\\model\\kettei2\\" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
+			Mat reSrc = eSrc[i](Rect(632, 200, 2000, 1500));
+			//imshow("resrc", reSrc);
 			//指定したサイズにリサイズ
-			inscribedResize(eSrc[i], resizeImg, Size(640, 480), INTER_AREA);
-			imwrite("result\\model\\test\\resizeImg" + oss.str(), resizeImg);
-			Sobel(resizeImg, sobelImg, CV_32F, 1, 1);
-			imwrite("result\\model\\test\\soble" + oss.str(), sobelImg);
-			Laplacian(resizeImg, laplacianImg, CV_32F, 3);
-			imwrite("result\\model\\test\\laplacian" + oss.str(), laplacianImg);
-			Canny(resizeImg, cannyImg, 50, 200, 3);
-			imwrite("result\\model\\test\\canny" + oss.str(), cannyImg);
+			inscribedResize(reSrc, resizeImg, Size(640, 480), INTER_AREA);
+			imwrite("result\\model\\test3\\resizeImg" + oss.str(), resizeImg);
+			//Sobel(resizeImg, sobelImg, CV_32F, 1, 1);
+			//imwrite("result\\model\\test\\soble" + oss.str(), sobelImg);
+			//Laplacian(resizeImg, laplacianImg, CV_32F, 3);
+			//imwrite("result\\model\\test\\laplacian" + oss.str(), laplacianImg);
+			//Canny(resizeImg, cannyImg, 50, 200, 3);
+			//imwrite("result\\model\\test\\canny" + oss.str(), cannyImg);
 
 			//大津の二値化をしてから再度変換
 			//cv::threshold(resizeImg, binImg, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
-			cv::threshold(resizeImg, binImg, 85, 255, CV_THRESH_BINARY);
-			imwrite("result\\model\\test\\binary\\resizeImg" + oss.str(), binImg);
-			Sobel(binImg, binsobelImg, CV_32F, 1, 1);
-			imwrite("result\\model\\test\\binary\\soble" + oss.str(), binsobelImg);
-			Laplacian(binImg, binlaplacianImg, CV_32F, 3);
-			imwrite("result\\model\\test\\binary\\laplacian" + oss.str(), binlaplacianImg);
-			Canny(binImg, bincannyImg, 50, 200, 3);
-			imwrite("result\\model\\test\\binary\\canny" + oss.str(), bincannyImg);
+			//cv::threshold(resizeImg, binImg, 85, 255, CV_THRESH_BINARY);
+			//imwrite("result\\model\\test\\binary\\resizeImg" + oss.str(), binImg);
+			//Sobel(binImg, binsobelImg, CV_32F, 1, 1);
+			//imwrite("result\\model\\test\\binary\\soble" + oss.str(), binsobelImg);
+			//Laplacian(binImg, binlaplacianImg, CV_32F, 3);
+			//imwrite("result\\model\\test\\binary\\laplacian" + oss.str(), binlaplacianImg);
+			//Canny(binImg, bincannyImg, 50, 200, 3);
+			//imwrite("result\\model\\test\\binary\\canny" + oss.str(), bincannyImg);
 		}
 
 		/*bool showLoop = true;
@@ -263,12 +267,18 @@ int main(int argc, char** argv)
 		tempMatch.match(cap, gtemp);
 		
 		Mat f;
-		string csv_path = "data\\data_LM_RS.csv";
-		Mat temp = imread("result\\model\\test\\resizeImg90.jpg");
-		while(true){
+		string csv_path = "data\\data_real_LM_RS.csv";
+		Mat temp = imread("result\\model\\test2\\resizeImg90.jpg"),gf;
+		bool loopCSV = true;
+		while(loopCSV){
 			cap >> f;
+			cvtColor(f, gf, CV_RGB2GRAY);
 			tempMatch.matchCSV(f, csv_path);
-			waitKey(1);
+			key = waitKey(33);
+			if( key == 27 ){
+				loopCSV = false;
+				destroyAllWindows();
+			}
 		}
 
 		Mat sgtemp;
@@ -288,6 +298,7 @@ int main(int argc, char** argv)
 			switch(key){
 			case 27:
 				fdloop = false;
+				destroyAllWindows();
 				break;
 			}
 		}

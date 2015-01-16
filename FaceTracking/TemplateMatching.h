@@ -22,6 +22,7 @@ private:
 	string filename,templateURL;
 	
 	Mat templates[181];//”z—ñ‚ğ180‚Ü‚Å‚Â‚½‚ß
+	Mat templatesR[136];//”z—ñ‚ğ135‚Ü‚Å‚Â‚½‚ß
 	bool tmFlg;
 	TempModel tm[181];
 	
