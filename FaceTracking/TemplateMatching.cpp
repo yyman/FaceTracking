@@ -122,7 +122,7 @@ TemplateMatching::TemplateMatching(){
 	{	
 		ostringstream oss;
 		oss << i << ".jpg";
-		templateURL = "result\\model\\test2\\resizeImg" + oss.str();
+		templateURL = "result\\model\\test2c\\resizeImg" + oss.str();
 		templatesR[i] = imread(templateURL);
 	}
 
@@ -414,7 +414,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 
 void TemplateMatching::tempChange(){
 	if (tempType == 1){
-		templateURL = "result\\model\\test3\\resizeImg90.jpg";
+		templateURL = "result\\model\\test2\\resizeImg90.jpg";
 		templateViewImg = imread(templateURL);
 		myTemplate = templateViewImg.clone();
 		imshow("templateViewImg", templateViewImg);
@@ -522,12 +522,14 @@ void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 		tr1[i] = Rect(tm[a].p1.x, tm[a].p1.y, mouseSize.width, mouseSize.height);
 		template1[i] = templatesR[a](tr1[i]);
 		result_img1[i] = matching(src, template1[i], CV_TM_CCOEFF_NORMED);
+		//result_img1[i] = matching(src, template1[i], CV_TM_CCORR_NORMED);
 		roi_rect1[i] = maxRectResult(result_img1[i], maxVal1[i]);
 
 		//テンプレート2
 		tr2[i] = Rect(tm[a].p2.x, tm[a].p2.y, mouseSize.width, mouseSize.height);
 		template2[i] = templatesR[a](tr2[i]);
 		result_img2[i] = matching(src, template2[i], CV_TM_CCOEFF_NORMED);
+		//result_img2[i] = matching(src, template2[i], CV_TM_CCORR_NORMED);
 		roi_rect2[i] = maxRectResult(result_img2[i], maxVal2[i]);
 
 		//ベクトル取得
@@ -571,24 +573,25 @@ void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 	int max_i = 0;
 	double max_v = 0;
 	for(int i = 0; i < ai; i++){
-		//cout << i << ":" << sum_maxVal[i] << endl; 
-		if(max_v < sum_maxVal[i]){
+		cout << i << ":" << sum_maxVal[i] << endl; 
+		if(max_v <= sum_maxVal[i]){
 			max_i = i;
 			max_v = sum_maxVal[i];
 		}
 	}
 
 	
-	cout << max_i + 45 << ":" << max_v << endl; 
+	cout << max_i * 3 + 45 << ":" << max_v << endl; 
 
 	rectangle(dst0, roi_rect1[max_i], cv::Scalar(255, 0, 0), 3);
 	rectangle(dst0, roi_rect2[max_i], cv::Scalar(0, 255, 0), 3);
 	rectangle(dst0, sum_roi_rect[max_i], cv::Scalar(0, 0, 255), 3);
-	putText(dst0, to_string(max_i + 45), cv::Point(50,50), cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0,0,200), 2, CV_AA);
+	putText(dst0, to_string(max_i * 3 + 45), cv::Point(50,50), cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0,0,200), 2, CV_AA);
 	imshow("matchCSV0", dst0);
 	imshow("mC_sum_result0", sum_result[max_i]);
+	imshow("mC_temp", templatesR[max_i * 3 + 45]);
 
-	//waitKey(0);
+	waitKey(0);
 }
 
 void TemplateMatching::importCSV(string csv_path){
@@ -640,6 +643,7 @@ void TemplateMatching::importCSV(string csv_path){
 
 Mat TemplateMatching::matching(Mat src, Mat temp, int flg){
 		Mat gImg,searchImg,result_img;
+		tempType = 3;
 		if (tempType == 1){
 			//グレースケール
 			cvtColor(src, gImg, CV_RGB2GRAY);
@@ -655,6 +659,9 @@ Mat TemplateMatching::matching(Mat src, Mat temp, int flg){
 			cvtColor(src, gImg, CV_RGB2GRAY);
 			cv::threshold(gImg, searchImg, 85, 255, CV_THRESH_BINARY);
 			cvtColor(searchImg, searchImg, CV_GRAY2RGB);
+		}
+		else if (tempType == 3){
+			searchImg = src.clone();
 		}
 		cv::matchTemplate(searchImg, temp, result_img, flg);
 

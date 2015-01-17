@@ -159,10 +159,10 @@ int main(int argc, char** argv)
 		//ブロック画像作成フェイズ
 		mousePoint.x = 100;
 		mousePoint.y = 100;
-		Mat templ = imread("result\\model\\test2\\resizeImg90.jpg");
+		//Mat templ = imread("result\\model\\test2\\resizeImg90.jpg");
 		while(blockImgDone){
 			cap >> img; // カメラから新しいフレームを取得
-			img = templ;
+			//img = templ;
 			roiRect = Rect(Point(mousePoint.x-blockSize.width/2, mousePoint.y-blockSize.height/2),
 				Point(mousePoint.x+blockSize.width/2, mousePoint.y+blockSize.height/2));
 			img(roiRect).copyTo(blockImg);
@@ -216,12 +216,13 @@ int main(int argc, char** argv)
 		for(int i = 145; i <= 135; i+=3){
 			ostringstream oss;
 			oss << i << ".jpg";
-			eSrc[i] = imread("result\\model\\kettei2\\" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
-			Mat reSrc = eSrc[i](Rect(632, 200, 2000, 1500));
+			//eSrc[i] = imread("result\\model\\kettei2\\" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
+			eSrc[i] = imread("result\\model\\kettei2\\" + oss.str());
+			//Mat reSrc = eSrc[i](Rect(632, 200, 2000, 1500));
 			//imshow("resrc", reSrc);
 			//指定したサイズにリサイズ
-			inscribedResize(reSrc, resizeImg, Size(640, 480), INTER_AREA);
-			imwrite("result\\model\\test3\\resizeImg" + oss.str(), resizeImg);
+			inscribedResize(eSrc[i], resizeImg, Size(640, 480), INTER_AREA);
+			imwrite("result\\model\\test2c\\resizeImg" + oss.str(), resizeImg);
 			//Sobel(resizeImg, sobelImg, CV_32F, 1, 1);
 			//imwrite("result\\model\\test\\soble" + oss.str(), sobelImg);
 			//Laplacian(resizeImg, laplacianImg, CV_32F, 3);
@@ -268,12 +269,12 @@ int main(int argc, char** argv)
 		
 		Mat f;
 		string csv_path = "data\\data_real_LM_RS.csv";
-		Mat temp = imread("result\\model\\test2\\resizeImg90.jpg"),gf;
+		Mat temp = imread("result\\model\\test2c\\resizeImg90.jpg"),gf;
 		bool loopCSV = true;
 		while(loopCSV){
 			cap >> f;
 			cvtColor(f, gf, CV_RGB2GRAY);
-			tempMatch.matchCSV(f, csv_path);
+			tempMatch.matchCSV(temp, csv_path);
 			key = waitKey(33);
 			if( key == 27 ){
 				loopCSV = false;
