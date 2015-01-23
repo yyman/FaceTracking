@@ -12,7 +12,7 @@
 int w = 640;//画面の幅
 int h = 480;//画面の高さ
 int num = 100;//パーティクルの数
-Size blockSize = Size(30,30);//粒子のブロックサイズ（決め打ち）
+Size blockSize = Size(50,50);//粒子のブロックサイズ（決め打ち）
 Size cellSize = Size(5,5);//粒子のブロックサイズ（決め打ち）
 Point mousePoint;
 bool blockImgDone = true;
@@ -162,7 +162,7 @@ int main(int argc, char** argv)
 		Mat templ = imread("result\\model\\test2\\resizeImg90.jpg");
 		while(blockImgDone){
 			cap >> img; // カメラから新しいフレームを取得
-			img = templ;
+			//img = templ;
 			roiRect = Rect(Point(mousePoint.x-blockSize.width/2, mousePoint.y-blockSize.height/2),
 				Point(mousePoint.x+blockSize.width/2, mousePoint.y+blockSize.height/2));
 			img(roiRect).copyTo(blockImg);
@@ -216,12 +216,13 @@ int main(int argc, char** argv)
 		for(int i = 145; i <= 135; i+=3){
 			ostringstream oss;
 			oss << i << ".jpg";
-			eSrc[i] = imread("result\\model\\kettei2\\" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
-			Mat reSrc = eSrc[i](Rect(632, 200, 2000, 1500));
+			//eSrc[i] = imread("result\\model\\kettei2\\" + oss.str(), CV_LOAD_IMAGE_GRAYSCALE);
+			eSrc[i] = imread("result\\model\\kettei2\\" + oss.str());
+			//Mat reSrc = eSrc[i](Rect(632, 200, 2000, 1500));
 			//imshow("resrc", reSrc);
 			//指定したサイズにリサイズ
-			inscribedResize(reSrc, resizeImg, Size(640, 480), INTER_AREA);
-			imwrite("result\\model\\test3\\resizeImg" + oss.str(), resizeImg);
+			inscribedResize(eSrc[i], resizeImg, Size(640, 480), INTER_AREA);
+			imwrite("result\\model\\test2c\\resizeImg" + oss.str(), resizeImg);
 			//Sobel(resizeImg, sobelImg, CV_32F, 1, 1);
 			//imwrite("result\\model\\test\\soble" + oss.str(), sobelImg);
 			//Laplacian(resizeImg, laplacianImg, CV_32F, 3);
@@ -267,9 +268,9 @@ int main(int argc, char** argv)
 		tempMatch.match(cap, gtemp);
 		
 		Mat f;
-		string csv_path = "data\\data_real_LM_RS.csv";
+		string csv_path = "data\\data_LM_RS.csv";
 		Mat temp = imread("result\\model\\test2\\resizeImg90.jpg"),gf;
-		bool loopCSV = true;
+		bool loopCSV = false;
 		while(loopCSV){
 			cap >> f;
 			cvtColor(f, gf, CV_RGB2GRAY);
@@ -289,11 +290,15 @@ int main(int argc, char** argv)
 		//vgaCap.cap(cap);
 
 		//SIFTやSURFとかの特徴点検出
-		OcvFD ofd = OcvFD("SURF", "SURF", "BruteForce");
-		bool fdloop = true;
+		OcvFD ofd = OcvFD("SIFT", "SIFT", "BruteForce");
+		OcvFD ofd2 = OcvFD("SURF", "SURF", "BruteForce");
+		bool fdloop = false;
 		while(fdloop){
 			cap >> img;
-			ofd.matching(sgtemp, img, true);
+			Mat img2;
+			inscribedResize(img, img2, Size(320,240));
+			ofd.matching(blockImg, img2, true);
+			ofd2.matching(blockImg, img2, true);
 			key = waitKey(33);
 			switch(key){
 			case 27:
@@ -317,6 +322,9 @@ int main(int argc, char** argv)
 
 			hough.calc(img);
 			hough.show();
+			
+			double wMax = 0.0;
+			Particle* mp = new Particle();
 
 			switch(trackingType){
 			case TRACKING_PARTICLE://パーティクルフィルタの場合
@@ -333,7 +341,6 @@ int main(int argc, char** argv)
 				pf->measure(p);
 
 				pf->resample();
-
 				// パーティクルの表示
 				if(particleFlag){
 					for(int i=0; i<num; i++){
@@ -341,13 +348,17 @@ int main(int argc, char** argv)
 						//rectangle(dst,Point( pf->particles[i]->get_x()-blockSize.width/2, pf->particles[i]->get_y()-blockSize.height/2),
 						//Point( pf->particles[i]->get_x()+blockSize.width/2, pf->particles[i]->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
 						//cout << pf->particles[i]->getWeight() << endl;
+						if (wMax < pf->particles[i]->getWeight()) {
+							wMax = pf->particles[i]->getWeight();
+							mp = pf->particles[i];
+						}
 					}
 				}
 				// 物体位置（パーティクルの重心）推定結果の表示
 				if(measureFlag){
 					//circle(dst, cvPoint( p->get_x(), p->get_y() ), 10, cl.getCenterColor(), CV_FILLED);
-					rectangle(dst,Point( p->get_x()-blockSize.width/2, p->get_y()-blockSize.height/2),
-						Point( p->get_x()+blockSize.width/2, p->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
+					rectangle(dst,Point( mp->get_x()-blockSize.width/2, mp->get_y()-blockSize.height/2),
+						Point( mp->get_x()+blockSize.width/2, mp->get_y()+blockSize.height/2), CV_RGB(0, 0, 255), 2);
 				}
 				//}
 
