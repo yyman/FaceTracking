@@ -521,15 +521,15 @@ void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 		//テンプレート1
 		tr1[i] = Rect(tm[a].p1.x, tm[a].p1.y, mouseSize.width, mouseSize.height);
 		template1[i] = templatesR[a](tr1[i]);
-		result_img1[i] = matching(src, template1[i], CV_TM_CCOEFF_NORMED);
-		//result_img1[i] = matching(src, template1[i], CV_TM_CCORR_NORMED);
+		//result_img1[i] = matching(src, template1[i], CV_TM_CCOEFF_NORMED);
+		result_img1[i] = matching(src, template1[i], CV_TM_CCORR_NORMED);
 		roi_rect1[i] = maxRectResult(result_img1[i], maxVal1[i]);
 
 		//テンプレート2
 		tr2[i] = Rect(tm[a].p2.x, tm[a].p2.y, mouseSize.width, mouseSize.height);
 		template2[i] = templatesR[a](tr2[i]);
-		result_img2[i] = matching(src, template2[i], CV_TM_CCOEFF_NORMED);
-		//result_img2[i] = matching(src, template2[i], CV_TM_CCORR_NORMED);
+		//result_img2[i] = matching(src, template2[i], CV_TM_CCOEFF_NORMED);
+		result_img2[i] = matching(src, template2[i], CV_TM_CCORR_NORMED);
 		roi_rect2[i] = maxRectResult(result_img2[i], maxVal2[i]);
 
 		//ベクトル取得

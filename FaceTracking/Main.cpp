@@ -273,8 +273,8 @@ int main(int argc, char** argv)
 		bool loopCSV = true;
 		while(loopCSV){
 			cap >> f;
-			cvtColor(f, gf, CV_RGB2GRAY);
-			tempMatch.matchCSV(temp, csv_path);
+			//cvtColor(f, gf, CV_RGB2GRAY);
+			tempMatch.matchCSV(f, csv_path);
 			key = waitKey(33);
 			if( key == 27 ){
 				loopCSV = false;
