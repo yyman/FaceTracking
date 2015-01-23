@@ -92,6 +92,7 @@ void OcvFD::matching(
 	// マッチング結果の表示
 	cv::Mat out;
 	cv::drawMatches(img1, keypoint1, img2, keypoint2, dmatch, out, Scalar::all(-1), Scalar::all(-1), vector<char>(), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	cv::drawMatches(img1, keypoint1, img2, keypoint2, dmatch, out);
 	cv::imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName, out);
 	//waitKey(0);
 }

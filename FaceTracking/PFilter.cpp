@@ -101,21 +101,20 @@ void PFilter::weight(Mat img, Size _blockSize, Mat baseImg)
 	if(!ch.isBaseHist()){
 		ch.hsvBaseHist(baseImg);
 	}
+	wSum = 0.0;
 	for(int i=0; i<num; i++){
 		int x = pre_particles[i]->get_x();
 		int y = pre_particles[i]->get_y();
 		double pre_w = calcLikelihood(img, x, y, _blockSize);
 		pre_particles[i]->setWeight( pre_w * pre_w );
+		wSum += pre_particles[i]->getWeight();
 	}
 
 	//正規化
-	wSum = 0.0;
-	for(int i=0; i<num; i++){
-		wSum += pre_particles[i]->getWeight();
-	}
 	for(int i=0; i<num; i++){
 		double w = pre_particles[i]->getWeight() / wSum;
 		pre_particles[i]->setWeight( w );
+		cout<<w<<endl;
 	}
 }
 
@@ -165,8 +164,8 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 	src(roiRect).copyTo(blockImg);
 	//waitKey(33);
 
-	//Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
-	//result = cl.calcLikelihood(pBlock);
+	Block pBlock = Block(blockImg, _blockSize, cl.getCellSize());
+	result = cl.calcLikelihood(pBlock);
 
     //cout<<result<<endl;
 	if(_blockSize.width != 0 && _blockSize.height != 0){
@@ -177,11 +176,11 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 		int hh = (y+_blockSize.height/2 < img.size().height)?_blockSize.height:_blockSize.height-(y+_blockSize.height/2-img.size().height)-1;*/
 		//cout << hx << "," << hy << "," << hw << "," << hh << endl;
 		//faceImg = src(Rect(hx,hy,hw,hh));
-		double dist = ch.calcLikelihood(ch.hsvHist(blockImg));
+		//double dist = ch.calcLikelihood(ch.hsvHist(blockImg));
 		//Histogram normHist = Histogram(52,3);
 		//ch.calcNormHist(ch.hsvHist(blockImg), normHist);
 		//normHist.show("particleHist");
-		result = dist;
+		//result = dist;
 		//system("cls");
 		//cout<<result<<endl;
 	}
@@ -194,19 +193,23 @@ double PFilter::calcLikelihood(Mat img, int x, int y, Size _blockSize = Size(50,
 void PFilter::resample()
 {  
 
-	// 累積重み（＝ルーレット）
+	// 累積重み
 	double * w = new double[num];
 	w[0] = pre_particles[0]->getWeight();
 	for(int i=1; i<num; i++){
 		w[i] = w[i-1] + pre_particles[i]->getWeight();
 	}
 
+	//重みが大きいほどルーレットの的の枠の広さが広がる
+
 	for(int i=0; i<num; i++){
 		double darts = ((double)rand() / ((double)RAND_MAX + 1));
 		for(int j=0; j<num; j++){
+			//ランダムのdartsがあたった枠の事前推定を採用して次回はそこから移動（ノイズありで）
 			if( darts > w[j] ){
+				cout<<i<<","<<j<<" darts:"<<darts<<",wj;"<<w[j]<<endl;
 				continue;
-			}
+			}//枠が大きいと同じ所から移動するパーティクルが多くなる
 			else {
 				// リサンプリング
 				particles[i]->set_x( pre_particles[j]->get_x() );
@@ -215,6 +218,8 @@ void PFilter::resample()
 				particles[i]->set_vy( pre_particles[j]->get_vy() );
 				particles[i]->setWeight( pre_particles[j]->getWeight() );
 				//particles[i]->setWeight( 0.005 );
+				cout<<"hit "<<i<<","<<j<<" darts:"<<darts<<",wj;"<<w[j]<<endl;
+				waitKey(0);
 				break;
 			}     
 		}
