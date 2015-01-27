@@ -415,7 +415,7 @@ void TemplateMatching::match( VideoCapture frame, Mat tmp_img){
 
 void TemplateMatching::tempChange(){
 	if (tempType == 1){
-		templateURL = "result\\model\\test2\\resizeImg90.jpg";
+		templateURL = "result\\model\\test\\resizeImg90.jpg";
 		templateViewImg = imread(templateURL);
 		myTemplate = templateViewImg.clone();
 		imshow("templateViewImg", templateViewImg);
@@ -472,7 +472,7 @@ void TemplateMatching::tempRotate(uchar LR){
 		i = (temp_i != 0) ? temp_i - 3 : 180;
 	}
 	temp_i = i;
-	templateViewImg = templatesR[i].clone();//とりあえずクローンしとく
+	templateViewImg = templates[i].clone();//とりあえずクローンしとく
 	myTemplate = templateViewImg.clone();
 	imshow("templateViewImg", templateViewImg);
 }
