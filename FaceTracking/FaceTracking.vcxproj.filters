@@ -131,5 +131,8 @@
     <None Include="data\data_real_LM_RS.csv">
       <Filter>リソース ファイル</Filter>
     </None>
+    <None Include="data\data_real_RM_LS.csv">
+      <Filter>リソース ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>
