@@ -509,7 +509,7 @@ void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 	}
 	//tempType = 3;
 	
-	const int ai = 61;
+	const int ai = 31;
 	int64 start = cv::getTickCount();
 
 	//各変数を３つずつの配列で作成（コンストラクタで初期角度を指定）
@@ -520,7 +520,7 @@ void TemplateMatching::matchCSV(Mat src_img, string csv_path){
 	Vec2i vec[ai];
 	
 	//for (int a = init_a - diff_a, i = 0; a <= init_a + diff_a; a+=diff_a, i++){
-	for (int a = 0, i = 0; a <= 180; a+=3, i++){
+	for (int a = 45, i = 0; a <= 135; a+=3, i++){
 		//テンプレート1
 		tr1[i] = Rect(tm[a].p1.x, tm[a].p1.y, mouseSize.width, mouseSize.height);
 		template1[i] = templates[a](tr1[i]);
@@ -597,11 +597,11 @@ std::cout << elapsedMsec << "ms" << std::endl;
 	imshow("mC_sum_result0", sum_result[max_i]);
 	imshow("mC_temp", templatesR[max_i * 3 + 45]);
 
-	Mat dist = templates[135].clone();
-	rectangle(dist, Rect(tm[135].p1.x, tm[135].p1.y, mouseSize.width, mouseSize.height), cv::Scalar(255, 0, 0), 3);
-	rectangle(dist, Rect(tm[135].p2.x, tm[135].p2.y, mouseSize.width, mouseSize.height), cv::Scalar(0, 255, 0), 3);
+	//Mat dist = templates[135].clone();
+	//rectangle(dist, Rect(tm[135].p1.x, tm[135].p1.y, mouseSize.width, mouseSize.height), cv::Scalar(255, 0, 0), 3);
+	//rectangle(dist, Rect(tm[135].p2.x, tm[135].p2.y, mouseSize.width, mouseSize.height), cv::Scalar(0, 255, 0), 3);
 	
-	imshow("dist", dist);
+	//imshow("dist", dist);
 	//waitKey(0);
 }
 
@@ -654,7 +654,7 @@ void TemplateMatching::importCSV(string csv_path){
 
 Mat TemplateMatching::matching(Mat src, Mat temp, int flg){
 		Mat gImg,searchImg,result_img;
-		tempType = 3;
+		tempType = 1;
 		if (tempType == 1){
 			//グレースケール
 			cvtColor(src, gImg, CV_RGB2GRAY);

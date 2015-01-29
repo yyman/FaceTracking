@@ -18,6 +18,9 @@ private:
 	const std::string& featureDetectorName;		// detectorType
 	const std::string& descriptorExtractorName;	// descriptorExtractorType
 	const std::string& descriptorMatcherName;	// descriptorMatcherType
+	std::string ofeatureDetectorName;		// detectorType
+	std::string odescriptorExtractorName;	// descriptorExtractorType
+	std::string odescriptorMatcherName;	// descriptorMatcherType
 	cv::Ptr<cv::FeatureDetector> detector;
 	cv::Ptr<cv::DescriptorExtractor> extractor;
 	cv::Ptr<cv::DescriptorMatcher> matcher;

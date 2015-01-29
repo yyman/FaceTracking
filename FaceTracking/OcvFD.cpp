@@ -29,6 +29,10 @@ OcvFD::OcvFD(
 	
 	// マッチング
 	matcher = cv::DescriptorMatcher::create(descriptorMatcherName);
+
+	ofeatureDetectorName = featureDetectorName;
+	odescriptorExtractorName = descriptorExtractorName;
+	odescriptorMatcherName = descriptorMatcherName;
 }
 
 OcvFD::~OcvFD(void){
@@ -55,6 +59,7 @@ void OcvFD::matching(
 	//drawKeypoints(img2, keypoint2, keyout2);
 	try{
 	//drawKeypoints(img1, keypoint1, keyout1, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+		drawKeypoints(img1, keypoint1, keyout1);
 	}
 	catch(Exception& e){
 		cout<<e.msg<<endl;
@@ -74,13 +79,19 @@ void OcvFD::matching(
 		// クロスチェックする場合
 		std::vector<cv::DMatch> match12, match21;
 		matcher->match(descriptor1, descriptor2, match12);
-		matcher->match(descriptor2, descriptor1, match21);
-		for (size_t i = 0; i < match12.size(); i++)
-		{
-			cv::DMatch forward = match12[i];
-			cv::DMatch backward = match21[forward.trainIdx];
-			if (backward.trainIdx == forward.queryIdx)
-				dmatch.push_back(forward);
+		try{
+			matcher->match(descriptor2, descriptor1, match21);
+			for (size_t i = 0; i < match12.size(); i++)
+			{
+				cv::DMatch forward = match12[i];
+				cv::DMatch backward = match21[forward.trainIdx];
+				if (backward.trainIdx == forward.queryIdx)
+					dmatch.push_back(forward);
+			}
+		}
+		catch(Exception& e){
+			//cout << e.msg << endl;
+			matcher->match(descriptor1, descriptor2, dmatch);
 		}
 	}
 	else
@@ -93,7 +104,9 @@ void OcvFD::matching(
 	cv::Mat out;
 	cv::drawMatches(img1, keypoint1, img2, keypoint2, dmatch, out, Scalar::all(-1), Scalar::all(-1), vector<char>(), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 	cv::drawMatches(img1, keypoint1, img2, keypoint2, dmatch, out);
-	cv::imshow(featureDetectorName+"_"+descriptorExtractorName+"_"+descriptorMatcherName, out);
+	stringstream ss;
+	ss << ofeatureDetectorName << "_" << odescriptorExtractorName << "_" << odescriptorMatcherName;
+	cv::imshow(ss.str(), out);
 	//waitKey(0);
 }
 

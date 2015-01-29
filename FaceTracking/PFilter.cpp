@@ -207,7 +207,7 @@ void PFilter::resample()
 		for(int j=0; j<num; j++){
 			//ランダムのdartsがあたった枠の事前推定を採用して次回はそこから移動（ノイズありで）
 			if( darts > w[j] ){
-				cout<<i<<","<<j<<" darts:"<<darts<<",wj;"<<w[j]<<endl;
+				//cout<<i<<","<<j<<" darts:"<<darts<<",wj;"<<w[j]<<endl;
 				continue;
 			}//枠が大きいと同じ所から移動するパーティクルが多くなる
 			else {
@@ -218,8 +218,8 @@ void PFilter::resample()
 				particles[i]->set_vy( pre_particles[j]->get_vy() );
 				particles[i]->setWeight( pre_particles[j]->getWeight() );
 				//particles[i]->setWeight( 0.005 );
-				cout<<"hit "<<i<<","<<j<<" darts:"<<darts<<",wj;"<<w[j]<<endl;
-				waitKey(0);
+				//cout<<"hit "<<i<<","<<j<<" darts:"<<darts<<",wj;"<<w[j]<<endl;
+				//waitKey(0);
 				break;
 			}     
 		}

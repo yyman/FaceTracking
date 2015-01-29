@@ -164,7 +164,7 @@ int main(int argc, char** argv)
 			cap >> img; // カメラから新しいフレームを取得
 			//img = templ;
 			roiRect = Rect(Point(mousePoint.x-blockSize.width/2, mousePoint.y-blockSize.height/2),
-				Point(mousePoint.x+blockSize.width/2, mousePoint.y+blockSize.height/2));
+				Point(mousePoint.x+(blockSize.width+1)/2, mousePoint.y+(blockSize.height+1)/2));
 			img(roiRect).copyTo(blockImg);
 			namedWindow("img", CV_WINDOW_AUTOSIZE);
 			setMouseCallback("img", onMouse1, "img");
@@ -184,7 +184,7 @@ int main(int argc, char** argv)
 		//尤度計算テスト
 		CalcLike cl = CalcLike(blockImg, blockSize, cellSize);
 
-		cl.print();
+		//cl.print();
 		imshow("average",cl.getAverageImg());
 		imshow("blockImg",blockImg);
 
@@ -196,7 +196,7 @@ int main(int argc, char** argv)
 		//ヒストグラム計算用クラス
 		calcHSVHist ch = calcHSVHist(blockImg);
 
-		pf->setCL(cl);
+		//pf->setCL(cl);
 		pf->setCH(ch);
 
 		//ch.baseNormHist.show("baseHist");
@@ -265,7 +265,7 @@ int main(int argc, char** argv)
 		Mat gtemp = imread("result\\model\\test\\binary\\resizeImg90.jpg");
 		//テンプレートマッチング用
 		TemplateMatching tempMatch;
-		tempMatch.match(cap, gtemp);
+		//tempMatch.match(cap, gtemp);
 		
 		Mat f;
 		string csv_path = "data\\data_LM_RS.csv";
@@ -292,13 +292,13 @@ int main(int argc, char** argv)
 		//SIFTやSURFとかの特徴点検出
 		OcvFD ofd = OcvFD("SIFT", "SIFT", "BruteForce");
 		OcvFD ofd2 = OcvFD("SURF", "SURF", "BruteForce");
-		bool fdloop = false;
+		bool fdloop = true;
 		while(fdloop){
 			cap >> img;
 			Mat img2;
-			inscribedResize(img, img2, Size(320,240));
-			ofd.matching(blockImg, img2, true);
-			ofd2.matching(blockImg, img2, true);
+			//inscribedResize(img, img2, Size(320,240));
+			ofd.matching(blockImg, img, true);
+			ofd2.matching(blockImg, img, true);
 			key = waitKey(33);
 			switch(key){
 			case 27:
