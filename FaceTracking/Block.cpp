@@ -34,7 +34,7 @@ Block::Block(Mat _src, Size _blockSize, Size _cellSize)
 			cell[wbCount*3+cellSize.width*3*hbCount+0] += v[0]; // B
 			cell[wbCount*3+cellSize.width*3*hbCount+1] += v[1]; // G 
 			cell[wbCount*3+cellSize.width*3*hbCount+2] += v[2]; // R 
-			cout<<"y"<<y<<",wb"<<wbCount<<",hb"<<hbCount<<",cnt"<<wbCount*3+cellSize.width*3*hbCount<<endl;
+			//cout<<"y"<<y<<",wb"<<wbCount<<",hb"<<hbCount<<",cnt"<<wbCount*3+cellSize.width*3*hbCount<<endl;
 			wCount++;
 			if(wCount == cellW){
 				wCount = 0;

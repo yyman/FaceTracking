@@ -596,13 +596,43 @@ std::cout << elapsedMsec << "ms" << std::endl;
 	imshow("matchCSV0", dst0);
 	imshow("mC_sum_result0", sum_result[max_i]);
 	imshow("mC_temp", templatesR[max_i * 3 + 45]);
-
-	//Mat dist = templates[135].clone();
-	//rectangle(dist, Rect(tm[135].p1.x, tm[135].p1.y, mouseSize.width, mouseSize.height), cv::Scalar(255, 0, 0), 3);
-	//rectangle(dist, Rect(tm[135].p2.x, tm[135].p2.y, mouseSize.width, mouseSize.height), cv::Scalar(0, 255, 0), 3);
 	
-	//imshow("dist", dist);
-	//waitKey(0);
+	int aa = 0;
+
+	Mat dist = templates[aa].clone();
+	rectangle(dist, Rect(tm[aa].p1.x, tm[aa].p1.y, mouseSize.width, mouseSize.height), cv::Scalar(255, 0, 0), 3);
+	rectangle(dist, Rect(tm[aa].p2.x, tm[aa].p2.y, mouseSize.width, mouseSize.height), cv::Scalar(0, 255, 0), 3);
+	
+	imwrite("result\\gazo\\data_RM_LM_0.jpg", dist);
+	aa = 45;
+
+	dist = templates[aa].clone();
+	rectangle(dist, Rect(tm[aa].p1.x, tm[aa].p1.y, mouseSize.width, mouseSize.height), cv::Scalar(255, 0, 0), 3);
+	rectangle(dist, Rect(tm[aa].p2.x, tm[aa].p2.y, mouseSize.width, mouseSize.height), cv::Scalar(0, 255, 0), 3);
+	
+	imwrite("result\\gazo\\data_RM_LM_45.jpg", dist);
+	aa = 90;
+
+	dist = templates[aa].clone();
+	rectangle(dist, Rect(tm[aa].p1.x, tm[aa].p1.y, mouseSize.width, mouseSize.height), cv::Scalar(255, 0, 0), 3);
+	rectangle(dist, Rect(tm[aa].p2.x, tm[aa].p2.y, mouseSize.width, mouseSize.height), cv::Scalar(0, 255, 0), 3);
+	
+	imwrite("result\\gazo\\data_RM_LM_90.jpg", dist);
+	aa = 135;
+
+	dist = templates[aa].clone();
+	rectangle(dist, Rect(tm[aa].p1.x, tm[aa].p1.y, mouseSize.width, mouseSize.height), cv::Scalar(255, 0, 0), 3);
+	rectangle(dist, Rect(tm[aa].p2.x, tm[aa].p2.y, mouseSize.width, mouseSize.height), cv::Scalar(0, 255, 0), 3);
+	
+	imwrite("result\\gazo\\data_RM_LM_135.jpg", dist);
+	aa = 180;
+
+	dist = templates[aa].clone();
+	rectangle(dist, Rect(tm[aa].p1.x, tm[aa].p1.y, mouseSize.width, mouseSize.height), cv::Scalar(255, 0, 0), 3);
+	rectangle(dist, Rect(tm[aa].p2.x, tm[aa].p2.y, mouseSize.width, mouseSize.height), cv::Scalar(0, 255, 0), 3);
+	
+	imwrite("result\\gazo\\data_RM_LM_180.jpg", dist);
+	waitKey(0);
 }
 
 void TemplateMatching::importCSV(string csv_path){

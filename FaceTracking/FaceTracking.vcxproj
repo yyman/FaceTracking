@@ -111,11 +111,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\data_LM_RS.csv" />
+    <None Include="data\data_LS_RS.csv" />
     <None Include="data\data_real_LM_RS.csv" />
     <None Include="data\data_real_LS_RS.csv" />
     <None Include="data\data_real_RM_LM.csv" />
     <None Include="data\data_real_RM_LS.csv" />
     <None Include="data\data_RM_LM.csv" />
+    <None Include="data\data_RM_LS.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

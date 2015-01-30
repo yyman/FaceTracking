@@ -265,12 +265,12 @@ int main(int argc, char** argv)
 		Mat gtemp = imread("result\\model\\test\\binary\\resizeImg90.jpg");
 		//テンプレートマッチング用
 		TemplateMatching tempMatch;
-		//tempMatch.match(cap, gtemp);
+		tempMatch.match(cap, gtemp);
 		
 		Mat f;
-		string csv_path = "data\\data_LM_RS.csv";
+		string csv_path = "data\\data_RM_LM.csv";
 		Mat temp = imread("result\\model\\test2\\resizeImg90.jpg"),gf;
-		bool loopCSV = false;
+		bool loopCSV = true;
 		while(loopCSV){
 			cap >> f;
 			//cvtColor(f, gf, CV_RGB2GRAY);
